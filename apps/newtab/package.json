@@ -1,0 +1,12 @@
+{
+  "name": "@atlas-tab/newtab",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@atlas-tab/core": "workspace:*",
+    "@atlas-tab/ui": "workspace:*",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
