@@ -1,0 +1,11 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/core" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/analytics" },
+    { "path": "./apps/newtab" },
+    { "path": "./apps/popup" },
+    { "path": "./apps/background" }
+  ]
+}
