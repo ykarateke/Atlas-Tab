@@ -3,6 +3,8 @@
   flex-direction: column;
   gap: 16px;
   padding: 16px 20px 20px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .colorRow {

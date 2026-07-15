@@ -174,6 +174,7 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
 
   const [trashOpen, setTrashOpen] = useState(false);
   const [styleEditorOpen, setStyleEditorOpen] = useState(false);
+  const [stylePreviewing, setStylePreviewing] = useState(false);
   const [widgetGalleryOpen, setWidgetGalleryOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
 
@@ -385,12 +386,12 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
 
         {styleEditorOpen && (
           <div
-            className={styles.modalOverlay}
+            className={`${styles.modalOverlay} ${stylePreviewing ? styles.modalOverlayPreviewing : ""}`}
             onClick={(e) => {
               if (e.target === e.currentTarget) setStyleEditorOpen(false);
             }}
           >
-            <div className={styles.modal}>
+            <div className={`${styles.modal} ${stylePreviewing ? styles.modalPreviewing : ""}`}>
               <div className={styles.modalHeader}>
                 <span>{t("style.title")}</span>
                 <button
@@ -412,6 +413,7 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
                 onLayoutChange={updateSettings}
                 wallpaperCurrentId={state.wallpaper.currentId}
                 onWallpaperChange={setWallpaper}
+                onPreviewChange={setStylePreviewing}
               />
             </div>
           </div>

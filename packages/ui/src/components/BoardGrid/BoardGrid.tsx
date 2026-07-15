@@ -108,38 +108,45 @@ export function BoardGrid({
   }
 
   return (
-    <div
-      ref={containerRef}
-      className={styles.grid}
-      style={{
-        gridTemplateColumns: `repeat(${columnCount}, ${renderedBoardWidthPx}px)`,
-        gap: GRID_GAP_PX,
-      }}
-    >
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        {columns.map((columnBoards, col) => (
-          <div key={col} className={styles.column} style={{ gridColumn: col + 1 }}>
-            {columnBoards.map((board) => (
-              <Board
-                key={board.id}
-                board={board}
-                onRename={(name) => onRenameBoard(board.id, name)}
-                onDelete={() => onDeleteBoard(board.id)}
-              >
-                {renderBody(board)}
-              </Board>
-            ))}
-            <ColumnEndDroppable col={col}>
-              <NewBoardCell
-                pageId={pageId}
-                col={col}
-                row={columnBoards.length}
-                onCreate={onCreateBoard}
-              />
-            </ColumnEndDroppable>
-          </div>
-        ))}
-      </DndContext>
+    // Measurement happens on this full-width wrapper, not on .grid itself:
+    // .grid is `width: fit-content` (so it can stay centered when narrower
+    // than the viewport), and its own width is a *function of* columnCount —
+    // observing it directly would make the ResizeObserver read back the
+    // output of the very column count it's trying to compute, permanently
+    // collapsing to numCols=1 once it started there.
+    <div ref={containerRef} className={styles.gridWrapper}>
+      <div
+        className={styles.grid}
+        style={{
+          gridTemplateColumns: `repeat(${columnCount}, ${renderedBoardWidthPx}px)`,
+          gap: GRID_GAP_PX,
+        }}
+      >
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          {columns.map((columnBoards, col) => (
+            <div key={col} className={styles.column} style={{ gridColumn: col + 1 }}>
+              {columnBoards.map((board) => (
+                <Board
+                  key={board.id}
+                  board={board}
+                  onRename={(name) => onRenameBoard(board.id, name)}
+                  onDelete={() => onDeleteBoard(board.id)}
+                >
+                  {renderBody(board)}
+                </Board>
+              ))}
+              <ColumnEndDroppable col={col}>
+                <NewBoardCell
+                  pageId={pageId}
+                  col={col}
+                  row={columnBoards.length}
+                  onCreate={onCreateBoard}
+                />
+              </ColumnEndDroppable>
+            </div>
+          ))}
+        </DndContext>
+      </div>
     </div>
   );
 }

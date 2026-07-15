@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import type { AppSettings, ThemeStyle } from "@atlas-tab/core";
 import { useTranslation } from "../../i18n/I18nContext";
 import { GRID_GAP_PX, MIN_BOARD_WIDTH_PX, SIDE_RESERVE_PX } from "../BoardGrid/layout";
@@ -13,6 +14,10 @@ export interface StyleEditorProps {
   onLayoutChange: (updates: Pick<AppSettings, "maxBoardColumns" | "boardWidthPx">) => void;
   wallpaperCurrentId: string | null;
   onWallpaperChange: (id: string) => void;
+  // While the opacity/blur sliders are being dragged, the parent fades the
+  // opaque modal chrome down to near-invisible so the boards/wallpaper
+  // underneath are visible as a live preview of the change.
+  onPreviewChange?: (previewing: boolean) => void;
 }
 
 const TEXT_SCALES: ThemeStyle["textScale"][] = [0.9, 1, 1.15];
@@ -49,10 +54,29 @@ export function StyleEditor({
   onLayoutChange,
   wallpaperCurrentId,
   onWallpaperChange,
+  onPreviewChange,
 }: StyleEditorProps) {
   const t = useTranslation();
   const widthCap = maxBoardWidthFor(maxColumns);
   const clampedWidth = Math.min(boardWidthPx, widthCap);
+  const [previewing, setPreviewing] = useState(false);
+
+  useEffect(() => {
+    if (!previewing) return;
+    function stopPreview() {
+      setPreviewing(false);
+    }
+    window.addEventListener("pointerup", stopPreview);
+    window.addEventListener("pointercancel", stopPreview);
+    return () => {
+      window.removeEventListener("pointerup", stopPreview);
+      window.removeEventListener("pointercancel", stopPreview);
+    };
+  }, [previewing]);
+
+  useEffect(() => {
+    onPreviewChange?.(previewing);
+  }, [previewing, onPreviewChange]);
 
   return (
     <div className={styles.body}>
@@ -107,6 +131,7 @@ export function StyleEditor({
           step={1}
           value={themeStyle.boardOpacity}
           onChange={(e) => onChange({ boardOpacity: Number(e.target.value) })}
+          onPointerDown={() => setPreviewing(true)}
         />
       </label>
 
@@ -121,6 +146,7 @@ export function StyleEditor({
           step={1}
           value={themeStyle.boardBlur}
           onChange={(e) => onChange({ boardBlur: Number(e.target.value) })}
+          onPointerDown={() => setPreviewing(true)}
         />
       </label>
 

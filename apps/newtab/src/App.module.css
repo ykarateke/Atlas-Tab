@@ -113,11 +113,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition:
+    background 0.15s,
+    backdrop-filter 0.15s;
+}
+
+/* While dragging the opacity/blur sliders in the Style Editor, the dimming
+   layer drops out too, so the wallpaper behind is visible undimmed, not
+   just the modal box. */
+.modalOverlayPreviewing {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 .modal {
   width: 480px;
-  max-height: 70vh;
+  max-height: 80vh;
   background: rgba(16, 16, 24, 0.98);
   border: 0.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
@@ -125,6 +137,17 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  transition: opacity 0.15s;
+}
+
+/* Fades the opaque modal chrome to near-invisible while a live-preview
+   slider (Style Editor's opacity/blur) is being dragged, so the boards
+   underneath show through as a real-time preview of the change. Opacity,
+   not display/visibility, so the slider thumb doesn't jump or lose the
+   drag when it fades. */
+.modalPreviewing {
+  opacity: 0.06;
+  box-shadow: none;
 }
 
 .modalHeader {
