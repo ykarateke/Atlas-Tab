@@ -1,5 +1,5 @@
 import type { AppState } from "../schema/app-state";
-import type { Board } from "../schema/board";
+import type { Board, NotesBoard } from "../schema/board";
 import { createId } from "./id";
 
 // Plain `Omit<Board, "id">` doesn't distribute over Board's discriminated
@@ -30,6 +30,19 @@ export function renameBoard(state: AppState, boardId: string, name: string): App
   return {
     ...state,
     boards: state.boards.map((b) => (b.id === boardId ? { ...b, name: trimmed } : b)),
+  };
+}
+
+export function updateNotesBoard(
+  state: AppState,
+  boardId: string,
+  updates: Partial<Pick<NotesBoard, "content" | "height">>,
+): AppState {
+  return {
+    ...state,
+    boards: state.boards.map((b) =>
+      b.id === boardId && b.type === "notes" ? { ...b, ...updates } : b,
+    ),
   };
 }
 

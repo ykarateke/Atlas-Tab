@@ -1,0 +1,23 @@
+.clock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  padding: 5px 12px;
+  border-radius: 12px;
+  background: rgba(var(--board-rgb, 255, 255, 255), var(--board-alpha, 0.05));
+  box-shadow: var(--shadow-soft, 0 0 24px rgb(0 0 0 / 22%));
+}
+
+.time {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--board-text, rgb(255 255 255 / 90%));
+}
+
+.date {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--board-text-dim, rgb(255 255 255 / 32%));
+}

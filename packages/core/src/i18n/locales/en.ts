@@ -63,4 +63,32 @@ export const en = {
   "style.bold": "Bold",
   "style.reset": "Reset",
   "style.close": "Close",
+  "style.layoutTitle": "Layout",
+  "style.maxColumns": "Columns",
+  "style.columnsAuto": "Auto",
+  "style.boardWidth": "Board Width",
+
+  "notes.placeholder": "Write something…",
+
+  "calendar.prevMonth": "Previous month",
+  "calendar.nextMonth": "Next month",
+  "calendar.today": "Today",
+
+  "pomodoro.phase.focus": "Focus",
+  "pomodoro.phase.shortBreak": "Short Break",
+  "pomodoro.phase.longBreak": "Long Break",
+  "pomodoro.start": "Start",
+  "pomodoro.pause": "Pause",
+  "pomodoro.reset": "Reset",
+  "pomodoro.sessions": "{count} sessions",
+
+  "weather.cityPlaceholder": "Search city…",
+  "weather.feelsLike": "Feels like {temp}°",
+  "weather.wind": "Wind {speed}",
+  "weather.refresh": "Refresh",
+  "weather.setCity": "Set city",
+  "weather.noResults": "No cities found",
+
+  "focusStats.today": "Today",
+  "focusStats.openAria": "Focus stats",
 };

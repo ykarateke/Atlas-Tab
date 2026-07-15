@@ -50,10 +50,32 @@
   opacity: 0;
 }
 
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgb(255 255 255 / 75%);
+  padding-top: 4px;
+  border-top: 0.5px solid rgb(255 255 255 / 10%);
+}
+
 .sliderField {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.select {
+  font: inherit;
+  font-size: 13px;
+  padding: 7px 9px;
+  border-radius: 7px;
+  border: 0.5px solid rgb(255 255 255 / 20%);
+  background: rgb(255 255 255 / 8%);
+  color: #fff;
+}
+
+.select option {
+  color: #000;
 }
 
 .sliderField input[type="range"] {

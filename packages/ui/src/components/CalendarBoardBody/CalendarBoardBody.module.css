@@ -1,0 +1,75 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: calc(12px * var(--board-text-scale, 1));
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header button {
+  border: none;
+  background: none;
+  color: var(--board-text-secondary, rgb(255 255 255 / 60%));
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.header button:hover {
+  background: var(--board-hover-bg, rgb(255 255 255 / 8%));
+  color: var(--board-text-hover, #fff);
+}
+
+.monthLabel {
+  font-weight: 600;
+  font-size: calc(12px * var(--board-text-scale, 1));
+  color: var(--board-text, rgb(255 255 255 / 90%)) !important;
+  padding: 4px 8px !important;
+}
+
+.weekdays,
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays span {
+  text-align: center;
+  font-size: 10px;
+  color: var(--board-text-dim, rgb(255 255 255 / 32%));
+  padding-bottom: 2px;
+}
+
+.grid {
+  row-gap: 4px;
+}
+
+.day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  color: var(--board-text, rgb(255 255 255 / 90%));
+}
+
+.weekend {
+  color: var(--board-text-secondary, rgb(255 255 255 / 60%));
+}
+
+.otherMonth {
+  color: var(--board-text-dim, rgb(255 255 255 / 22%));
+}
+
+.today {
+  background: var(--accent-tab-bg, rgb(255 255 255 / 18%));
+  font-weight: 600;
+}

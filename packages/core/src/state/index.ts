@@ -6,4 +6,6 @@ export * from "./bookmarks";
 export * from "./trash";
 export * from "./theme";
 export * from "./settings";
+export * from "./pomodoro";
+export * from "./weather";
 export * from "./persistence";

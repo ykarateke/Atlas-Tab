@@ -1,6 +1,14 @@
 import { create } from "zustand";
 import * as core from "@atlas-tab/core";
-import type { AppSettings, AppState, NewBoard, ThemeStyle } from "@atlas-tab/core";
+import type {
+  AppSettings,
+  AppState,
+  GeocodeResult,
+  NewBoard,
+  NotesBoard,
+  ThemeStyle,
+  WeatherConfig,
+} from "@atlas-tab/core";
 import { chromeStorageAdapter } from "./chromeStorageAdapter";
 
 const SAVE_DEBOUNCE_MS = 500;
@@ -49,9 +57,20 @@ interface AppStore {
   updateThemeStyle: (updates: Partial<ThemeStyle>) => void;
   resetThemeStyle: () => void;
   updateSettings: (updates: Partial<AppSettings>) => void;
+
+  updateNotesBoard: (boardId: string, updates: Partial<Pick<NotesBoard, "content" | "height">>) => void;
+
+  startPomodoroTimer: (boardId: string) => void;
+  pausePomodoroTimer: (boardId: string) => void;
+  resetPomodoroTimer: (boardId: string) => void;
+  tickPomodoroTimer: (boardId: string) => void;
+
+  updateWeatherConfig: (updates: Partial<WeatherConfig>) => void;
+  refreshWeatherNow: () => Promise<void>;
+  searchCity: (query: string) => Promise<GeocodeResult[]>;
 }
 
-export const useAppStore = create<AppStore>((set) => {
+export const useAppStore = create<AppStore>((set, get) => {
   function apply(mutate: (state: AppState) => AppState) {
     set((store) => {
       const next = mutate(store.state);
@@ -96,5 +115,20 @@ export const useAppStore = create<AppStore>((set) => {
     updateThemeStyle: (updates) => apply((s) => core.updateThemeStyle(s, updates)),
     resetThemeStyle: () => apply((s) => core.resetThemeStyle(s)),
     updateSettings: (updates) => apply((s) => core.updateSettings(s, updates)),
+
+    updateNotesBoard: (boardId, updates) =>
+      apply((s) => core.updateNotesBoard(s, boardId, updates)),
+
+    startPomodoroTimer: (boardId) => apply((s) => core.startPomodoroTimer(s, boardId, Date.now())),
+    pausePomodoroTimer: (boardId) => apply((s) => core.pausePomodoroTimer(s, boardId, Date.now())),
+    resetPomodoroTimer: (boardId) => apply((s) => core.resetPomodoroTimer(s, boardId)),
+    tickPomodoroTimer: (boardId) => apply((s) => core.tickPomodoroTimer(s, boardId, Date.now())),
+
+    updateWeatherConfig: (updates) => apply((s) => core.updateWeatherConfig(s, updates)),
+    refreshWeatherNow: async () => {
+      const updated = await core.refreshWeather(get().state.weather, fetch, Date.now());
+      apply((s) => core.updateWeatherConfig(s, { cache: updated.cache }));
+    },
+    searchCity: (query) => core.geocodeCity(query, fetch),
   };
 });

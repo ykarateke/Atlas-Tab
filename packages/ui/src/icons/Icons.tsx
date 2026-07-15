@@ -90,3 +90,54 @@ export function PlusIcon(props: IconProps) {
     </BaseIcon>
   );
 }
+
+export function ChevronLeftIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <polyline points="15 18 9 12 15 6" />
+    </BaseIcon>
+  );
+}
+
+export function ChevronRightIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <polyline points="9 18 15 12 9 6" />
+    </BaseIcon>
+  );
+}
+
+export function PlayIcon(props: IconProps) {
+  return (
+    <BaseIcon fill="currentColor" stroke="none" {...props}>
+      <polygon points="6 3 20 12 6 21 6 3" />
+    </BaseIcon>
+  );
+}
+
+export function PauseIcon(props: IconProps) {
+  return (
+    <BaseIcon fill="currentColor" stroke="none" {...props}>
+      <rect x="6" y="4" width="4" height="16" rx="1" />
+      <rect x="14" y="4" width="4" height="16" rx="1" />
+    </BaseIcon>
+  );
+}
+
+export function RefreshIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <polyline points="23 4 23 10 17 10" />
+      <polyline points="1 20 1 14 7 14" />
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+    </BaseIcon>
+  );
+}
+
+export function CloudIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z" />
+    </BaseIcon>
+  );
+}

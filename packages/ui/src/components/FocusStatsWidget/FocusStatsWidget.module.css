@@ -1,0 +1,78 @@
+.wrap {
+  position: relative;
+}
+
+.pill {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  padding: 5px 12px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(var(--board-rgb, 255, 255, 255), var(--board-alpha, 0.05));
+  box-shadow: var(--shadow-soft, 0 0 24px rgb(0 0 0 / 22%));
+  cursor: pointer;
+}
+
+.label {
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--board-text-dim, rgb(255 255 255 / 32%));
+}
+
+.value {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: var(--board-text, rgb(255 255 255 / 90%));
+}
+
+.popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  width: 180px;
+  background: rgba(24, 24, 32, 0.98);
+  border: 0.5px solid rgb(255 255 255 / 12%);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 40%);
+  padding: 12px;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 80px;
+}
+
+.barCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+}
+
+.barTrack {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px;
+  background: var(--accent-tab-bg, rgb(255 255 255 / 35%));
+}
+
+.barLabel {
+  font-size: 9px;
+  color: rgb(255 255 255 / 35%);
+}

@@ -64,4 +64,32 @@ export const tr: Record<keyof typeof en, string> = {
   "style.bold": "Kalın",
   "style.reset": "Sıfırla",
   "style.close": "Kapat",
+  "style.layoutTitle": "Yerleşim",
+  "style.maxColumns": "Sütun Sayısı",
+  "style.columnsAuto": "Otomatik",
+  "style.boardWidth": "Board Genişliği",
+
+  "notes.placeholder": "Bir şeyler yaz…",
+
+  "calendar.prevMonth": "Önceki ay",
+  "calendar.nextMonth": "Sonraki ay",
+  "calendar.today": "Bugün",
+
+  "pomodoro.phase.focus": "Odak",
+  "pomodoro.phase.shortBreak": "Kısa Mola",
+  "pomodoro.phase.longBreak": "Uzun Mola",
+  "pomodoro.start": "Başlat",
+  "pomodoro.pause": "Duraklat",
+  "pomodoro.reset": "Sıfırla",
+  "pomodoro.sessions": "{count} seans",
+
+  "weather.cityPlaceholder": "Şehir ara…",
+  "weather.feelsLike": "Hissedilen {temp}°",
+  "weather.wind": "Rüzgar {speed}",
+  "weather.refresh": "Yenile",
+  "weather.setCity": "Şehir seç",
+  "weather.noResults": "Şehir bulunamadı",
+
+  "focusStats.today": "Bugün",
+  "focusStats.openAria": "Odak istatistikleri",
 };

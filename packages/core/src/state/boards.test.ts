@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultAppState } from "./default-state";
-import { addBoard, deleteBoard, moveBoard, renameBoard } from "./boards";
+import { addBoard, deleteBoard, moveBoard, renameBoard, updateNotesBoard } from "./boards";
 import { addBookmark } from "./bookmarks";
 import type { AppState } from "../schema/app-state";
 
@@ -168,5 +168,34 @@ describe("deleteBoard", () => {
     const next = deleteBoard(state, a!.id);
     const byId = new Map(next.boards.map((board) => [board.id, board]));
     expect(byId.get(c!.id)!.row).toBe(1);
+  });
+});
+
+describe("updateNotesBoard", () => {
+  it("updates content and height on a notes board", () => {
+    let state = createDefaultAppState();
+    state = addBoard(state, {
+      pageId: state.activePageId,
+      name: "Scratch",
+      col: 0,
+      row: 0,
+      type: "notes",
+      content: "",
+      height: 160,
+    });
+    const boardId = state.boards[0]!.id;
+
+    const next = updateNotesBoard(state, boardId, { content: "hello", height: 220 });
+    const board = next.boards[0];
+    expect(board!.type).toBe("notes");
+    expect(board!.type === "notes" && board!.content).toBe("hello");
+    expect(board!.type === "notes" && board!.height).toBe(220);
+  });
+
+  it("is a no-op for a non-notes board", () => {
+    const state = withBoard(createDefaultAppState(), 0, 0);
+    const boardId = state.boards[0]!.id;
+    const next = updateNotesBoard(state, boardId, { content: "hello" });
+    expect(next).toEqual(state);
   });
 });

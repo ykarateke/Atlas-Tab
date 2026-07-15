@@ -1,0 +1,37 @@
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 80px;
+  resize: none;
+  border: none;
+  background: none;
+  outline: none;
+  color: var(--board-text, rgb(255 255 255 / 90%));
+  font: inherit;
+  font-size: calc(13px * var(--board-text-scale, 1));
+  line-height: 1.5;
+  padding: 2px;
+}
+
+.textarea::placeholder {
+  color: var(--board-text-dim, rgb(255 255 255 / 32%));
+}
+
+.resizeHandle {
+  align-self: center;
+  width: 32px;
+  height: 6px;
+  margin-top: 4px;
+  border-radius: 3px;
+  background: var(--board-text-dim, rgb(255 255 255 / 20%));
+  cursor: ns-resize;
+  touch-action: none;
+}
+
+.resizeHandle:hover {
+  background: var(--board-text-secondary, rgb(255 255 255 / 50%));
+}

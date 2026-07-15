@@ -1,4 +1,4 @@
-import type { ThemeStyle } from "@atlas-tab/core";
+import type { AppSettings, ThemeStyle } from "@atlas-tab/core";
 import { useTranslation } from "../../i18n/I18nContext";
 import styles from "./StyleEditor.module.css";
 
@@ -7,15 +7,43 @@ export interface StyleEditorProps {
   onChange: (updates: Partial<ThemeStyle>) => void;
   onReset: () => void;
   onClose: () => void;
+  maxColumns: AppSettings["maxBoardColumns"];
+  boardWidthPx: AppSettings["boardWidthPx"];
+  onLayoutChange: (updates: Pick<AppSettings, "maxBoardColumns" | "boardWidthPx">) => void;
 }
 
 const TEXT_SCALES: ThemeStyle["textScale"][] = [0.9, 1, 1.15];
+const COLUMN_OPTIONS = [4, 5, 6, 7, 8, 9] as const;
+const MIN_BOARD_WIDTH = 160;
+const MAX_BOARD_WIDTH_AUTO = 400;
+const GRID_GAP_PX = 16;
+const APP_HORIZONTAL_PADDING_PX = 48;
+
+// FEATURE_SPECS.md § Settings: board width's max is "dynamically capped by
+// what the current column count can actually fit" — approximated from the
+// viewport width since this modal isn't inside the grid's own measured
+// container.
+function maxBoardWidthFor(columns: AppSettings["maxBoardColumns"]): number {
+  if (columns === null) return MAX_BOARD_WIDTH_AUTO;
+  const available = window.innerWidth - APP_HORIZONTAL_PADDING_PX - GRID_GAP_PX * (columns - 1);
+  return Math.max(MIN_BOARD_WIDTH, Math.floor(available / columns));
+}
 
 // Changes apply live as controls move (matching how the rest of Phase 1
 // mutates state directly, e.g. Trash) rather than v1's staged
 // cancel/save flow — Reset/Close are the only two actions needed here.
-export function StyleEditor({ themeStyle, onChange, onReset, onClose }: StyleEditorProps) {
+export function StyleEditor({
+  themeStyle,
+  onChange,
+  onReset,
+  onClose,
+  maxColumns,
+  boardWidthPx,
+  onLayoutChange,
+}: StyleEditorProps) {
   const t = useTranslation();
+  const widthCap = maxBoardWidthFor(maxColumns);
+  const clampedWidth = Math.min(boardWidthPx, widthCap);
 
   return (
     <div className={styles.body}>
@@ -107,6 +135,47 @@ export function StyleEditor({ themeStyle, onChange, onReset, onClose }: StyleEdi
           </button>
         </div>
       </div>
+
+      <div className={styles.sectionTitle}>{t("style.layoutTitle")}</div>
+
+      <label className={styles.sliderField}>
+        <span className={styles.label}>{t("style.maxColumns")}</span>
+        <select
+          className={styles.select}
+          value={maxColumns ?? "auto"}
+          onChange={(e) => {
+            const value = e.target.value;
+            const nextColumns = value === "auto" ? null : Number(value);
+            onLayoutChange({
+              maxBoardColumns: nextColumns,
+              boardWidthPx: Math.min(boardWidthPx, maxBoardWidthFor(nextColumns)),
+            });
+          }}
+        >
+          <option value="auto">{t("style.columnsAuto")}</option>
+          {COLUMN_OPTIONS.map((count) => (
+            <option key={count} value={count}>
+              {count}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className={styles.sliderField}>
+        <span className={styles.label}>
+          {t("style.boardWidth")} <span>{clampedWidth}px</span>
+        </span>
+        <input
+          type="range"
+          min={MIN_BOARD_WIDTH}
+          max={widthCap}
+          step={10}
+          value={clampedWidth}
+          onChange={(e) =>
+            onLayoutChange({ maxBoardColumns: maxColumns, boardWidthPx: Number(e.target.value) })
+          }
+        />
+      </label>
 
       <div className={styles.footer}>
         <button type="button" onClick={onReset}>

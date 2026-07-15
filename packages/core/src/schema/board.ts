@@ -52,3 +52,8 @@ export const boardSchema = z.discriminatedUnion("type", [
 
 export type Board = z.infer<typeof boardSchema>;
 export type BoardType = Board["type"];
+export type BookmarksBoard = z.infer<typeof bookmarksBoardSchema>;
+export type NotesBoard = z.infer<typeof notesBoardSchema>;
+export type CalendarBoard = z.infer<typeof calendarBoardSchema>;
+export type PomodoroBoard = z.infer<typeof pomodoroBoardSchema>;
+export type SearchBoard = z.infer<typeof searchBoardSchema>;

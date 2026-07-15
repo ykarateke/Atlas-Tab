@@ -2,19 +2,25 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BoardGrid,
   BookmarksBoardBody,
+  CalendarBoardBody,
+  ClockWidget,
   CloseIcon,
   FaviconProvider,
+  FocusStatsWidget,
   I18nProvider,
+  NotesBoardBody,
   PageTabs,
   PlaceholderBoardBody,
+  PomodoroBoardBody,
   SlidersIcon,
   StyleEditor,
   TrashIcon,
   TrashPanel,
+  WeatherWidget,
   fetchAndEncode,
   useTranslation,
 } from "@atlas-tab/ui";
-import { getFavicon, resolveLocale } from "@atlas-tab/core";
+import { getFavicon, getPomodoroTimer, isWeatherCacheStale, resolveLocale } from "@atlas-tab/core";
 import type { Bookmark, Board as BoardData } from "@atlas-tab/core";
 import { useAppStore } from "./store/useAppStore";
 import { chromeStorageAdapter } from "./store/chromeStorageAdapter";
@@ -23,6 +29,10 @@ import styles from "./App.module.css";
 
 function buildExtensionFaviconUrl(pageUrl: string): string {
   return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=48`;
+}
+
+function msUntilNextMinute(now: Date): number {
+  return (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
 }
 
 function groupBookmarksByBoard(bookmarks: Bookmark[]): Map<string, Bookmark[]> {
@@ -79,14 +89,40 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
     updateThemeStyle,
     resetThemeStyle,
     updateSettings,
+    updateNotesBoard,
+    startPomodoroTimer,
+    pausePomodoroTimer,
+    resetPomodoroTimer,
+    tickPomodoroTimer,
+    updateWeatherConfig,
+    refreshWeatherNow,
+    searchCity,
   } = useAppStore();
 
   const [trashOpen, setTrashOpen] = useState(false);
   const [styleEditorOpen, setStyleEditorOpen] = useState(false);
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
     applyThemeStyle(state.themeStyle);
   }, [state.themeStyle]);
+
+  // Single shared clock, updated on the minute boundary, fed to both
+  // ClockWidget and FocusStatsWidget so `new Date()` is only ever read here
+  // rather than during either widget's render (FEATURE_SPECS.md § Clock).
+  useEffect(() => {
+    const timeout = setTimeout(() => setNow(new Date()), msUntilNextMinute(now));
+    return () => clearTimeout(timeout);
+  }, [now]);
+
+  useEffect(() => {
+    if (state.weather.lat === null || state.weather.lon === null) return;
+    if (!isWeatherCacheStale(state.weather.cache, Date.now())) return;
+    void refreshWeatherNow();
+    // Only re-check when the configured location changes — staleness itself
+    // is time-based, not state-based, so it isn't a dependency here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.weather.lat, state.weather.lon, refreshWeatherNow]);
 
   const resolveFavicon = useMemo(
     () => (bookmarkUrl: string) =>
@@ -97,6 +133,7 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
   const activePageBoards = state.boards.filter((b) => b.pageId === state.activePageId);
   const bookmarksByBoardId = groupBookmarksByBoard(state.bookmarks);
   const trashCount = state.trash.boards.length + state.trash.bookmarks.length;
+  const hasPomodoroBoard = state.boards.some((b) => b.type === "pomodoro");
 
   function renderBody(board: BoardData) {
     if (board.type === "bookmarks") {
@@ -115,6 +152,29 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
         />
       );
     }
+    if (board.type === "notes") {
+      return (
+        <NotesBoardBody
+          content={board.content}
+          height={board.height}
+          onSave={(updates) => updateNotesBoard(board.id, updates)}
+        />
+      );
+    }
+    if (board.type === "calendar") {
+      return <CalendarBoardBody weekStart={state.locale.weekStart} locale={locale} />;
+    }
+    if (board.type === "pomodoro") {
+      return (
+        <PomodoroBoardBody
+          timer={getPomodoroTimer(state, board.id)}
+          onStart={() => startPomodoroTimer(board.id)}
+          onPause={() => pausePomodoroTimer(board.id)}
+          onReset={() => resetPomodoroTimer(board.id)}
+          onTick={() => tickPomodoroTimer(board.id)}
+        />
+      );
+    }
     return <PlaceholderBoardBody type={board.type} />;
   }
 
@@ -122,6 +182,7 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
     <FaviconProvider value={resolveFavicon}>
       <div className={styles.app}>
         <header className={styles.topbar}>
+          <div className={styles.topbarSpacer} />
           <PageTabs
             pages={state.pages}
             activePageId={state.activePageId}
@@ -131,6 +192,22 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
             onDeletePage={deletePage}
             onReorderPages={reorderPages}
           />
+          <div className={styles.topWidgets}>
+            <WeatherWidget
+              config={state.weather}
+              onConfigChange={updateWeatherConfig}
+              onSearchCity={searchCity}
+              onRefresh={refreshWeatherNow}
+            />
+            {hasPomodoroBoard && <FocusStatsWidget now={now} focusStats={state.focusStats} />}
+            {state.settings.clockEnabled && (
+              <ClockWidget
+                now={now}
+                timeFormat={state.locale.timeFormat}
+                dateFormat={state.locale.dateFormat}
+              />
+            )}
+          </div>
         </header>
 
         <div className={styles.boardsArea}>
@@ -232,6 +309,9 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
                 onChange={updateThemeStyle}
                 onReset={resetThemeStyle}
                 onClose={() => setStyleEditorOpen(false)}
+                maxColumns={state.settings.maxBoardColumns}
+                boardWidthPx={state.settings.boardWidthPx}
+                onLayoutChange={updateSettings}
               />
             </div>
           </div>
