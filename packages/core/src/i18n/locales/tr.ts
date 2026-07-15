@@ -8,6 +8,7 @@ export const tr: Record<keyof typeof en, string> = {
   "common.confirm": "Onayla",
   "common.restore": "Geri Yükle",
 
+  "page.defaultName": "Sayfa 1",
   "page.navAria": "Sayfalar",
   "page.addAria": "Sayfa ekle",
   "page.deleteAria": "{name} sil",
@@ -68,6 +69,7 @@ export const tr: Record<keyof typeof en, string> = {
   "style.maxColumns": "Sütun Sayısı",
   "style.columnsAuto": "Otomatik",
   "style.boardWidth": "Board Genişliği",
+  "style.wallpaperTitle": "Duvar Kağıdı",
 
   "notes.placeholder": "Bir şeyler yaz…",
 

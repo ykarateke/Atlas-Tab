@@ -8,4 +8,5 @@ export * from "./theme";
 export * from "./settings";
 export * from "./pomodoro";
 export * from "./weather";
+export * from "./wallpaper";
 export * from "./persistence";

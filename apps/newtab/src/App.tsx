@@ -34,6 +34,7 @@ import type { Bookmark, Board as BoardData, BoardType, NewBoard, SearchEngine } 
 import { useAppStore } from "./store/useAppStore";
 import { chromeStorageAdapter } from "./store/chromeStorageAdapter";
 import { applyThemeStyle } from "./applyThemeStyle";
+import { applyWallpaper } from "./applyWallpaper";
 import styles from "./App.module.css";
 
 function buildExtensionFaviconUrl(pageUrl: string): string {
@@ -168,6 +169,7 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
     updateWeatherConfig,
     refreshWeatherNow,
     searchCity,
+    setWallpaper,
   } = useAppStore();
 
   const [trashOpen, setTrashOpen] = useState(false);
@@ -178,6 +180,10 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
   useEffect(() => {
     applyThemeStyle(state.themeStyle);
   }, [state.themeStyle]);
+
+  useEffect(() => {
+    applyWallpaper(state.wallpaper.currentId);
+  }, [state.wallpaper.currentId]);
 
   // Single shared clock, updated on the minute boundary, fed to both
   // ClockWidget and FocusStatsWidget so `new Date()` is only ever read here
@@ -404,6 +410,8 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
                 maxColumns={state.settings.maxBoardColumns}
                 boardWidthPx={state.settings.boardWidthPx}
                 onLayoutChange={updateSettings}
+                wallpaperCurrentId={state.wallpaper.currentId}
+                onWallpaperChange={setWallpaper}
               />
             </div>
           </div>

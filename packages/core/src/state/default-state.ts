@@ -1,12 +1,23 @@
 import type { AppState } from "../schema/app-state";
 import { createId } from "./id";
+import { createTranslator, resolveLocale } from "../i18n";
+
+// The first page's name is the only piece of "product data" a fresh install
+// generates on its own (everything else defaults to empty/off) — it must
+// follow the detected locale rather than being hardcoded to English
+// (FEATURE_SPECS.md § i18n).
+function defaultFirstPageName(): string {
+  const browserLanguage = typeof navigator !== "undefined" ? navigator.language : "en";
+  const locale = resolveLocale("auto", browserLanguage);
+  return createTranslator(locale)("page.defaultName");
+}
 
 export function createDefaultAppState(): AppState {
   const firstPageId = createId();
 
   return {
     schemaVersion: 1,
-    pages: [{ id: firstPageId, name: "Page 1", order: 0 }],
+    pages: [{ id: firstPageId, name: defaultFirstPageName(), order: 0 }],
     activePageId: firstPageId,
     boards: [],
     bookmarks: [],

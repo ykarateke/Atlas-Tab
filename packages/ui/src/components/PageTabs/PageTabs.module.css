@@ -1,13 +1,9 @@
 .tabRow {
   display: inline-flex;
-  align-items: center;
-  gap: 2px;
   max-width: 100%;
   background: rgba(var(--board-rgb, 255, 255, 255), var(--board-alpha, 0.05));
   border-radius: 16px;
   padding: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
   position: relative;
   isolation: isolate;
   box-shadow: var(--shadow-soft, 0 0 24px rgb(0 0 0 / 22%));
@@ -24,7 +20,16 @@
   pointer-events: none;
 }
 
-.tabRow::-webkit-scrollbar {
+.scrollArea {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.scrollArea::-webkit-scrollbar {
   display: none;
 }
 

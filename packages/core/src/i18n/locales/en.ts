@@ -7,6 +7,7 @@ export const en = {
   "common.confirm": "Confirm",
   "common.restore": "Restore",
 
+  "page.defaultName": "Page 1",
   "page.navAria": "Pages",
   "page.addAria": "Add page",
   "page.deleteAria": "Delete {name}",
@@ -67,6 +68,7 @@ export const en = {
   "style.maxColumns": "Columns",
   "style.columnsAuto": "Auto",
   "style.boardWidth": "Board Width",
+  "style.wallpaperTitle": "Wallpaper",
 
   "notes.placeholder": "Write something…",
 

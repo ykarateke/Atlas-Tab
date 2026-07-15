@@ -147,50 +147,56 @@ export function PageTabs({
 
   return (
     <nav className={styles.tabRow} aria-label={t("page.navAria")}>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={sortedPages.map((p) => p.id)}
-          strategy={horizontalListSortingStrategy}
-        >
-          {sortedPages.map((page) => (
-            <PageTab
-              key={page.id}
-              page={page}
-              isActive={page.id === activePageId}
-              canDelete={pages.length > 1}
-              onSelect={() => onSelectPage(page.id)}
-              onRename={(name) => onRenamePage(page.id, name)}
-              onDelete={() => onDeletePage(page.id)}
-            />
-          ))}
-        </SortableContext>
-      </DndContext>
+      {/* The glass background/blur lives on this non-scrolling wrapper, not
+          on the overflow-x:auto element below — overflow + a negative
+          z-index backdrop-filter layer on the *same* element clips the blur
+          in some browsers, leaving the tabs looking flat instead of glassy. */}
+      <div className={styles.scrollArea}>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={sortedPages.map((p) => p.id)}
+            strategy={horizontalListSortingStrategy}
+          >
+            {sortedPages.map((page) => (
+              <PageTab
+                key={page.id}
+                page={page}
+                isActive={page.id === activePageId}
+                canDelete={pages.length > 1}
+                onSelect={() => onSelectPage(page.id)}
+                onRename={(name) => onRenamePage(page.id, name)}
+                onDelete={() => onDeletePage(page.id)}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
 
-      {addingPage ? (
-        <input
-          autoFocus
-          className={styles.renameInput}
-          value={newPageName}
-          onChange={(e) => setNewPageName(e.target.value)}
-          onBlur={commitNewPage}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") e.currentTarget.blur();
-            if (e.key === "Escape") {
-              setNewPageName("");
-              setAddingPage(false);
-            }
-          }}
-        />
-      ) : (
-        <button
-          type="button"
-          aria-label={t("page.addAria")}
-          className={styles.addButton}
-          onClick={() => setAddingPage(true)}
-        >
-          +
-        </button>
-      )}
+        {addingPage ? (
+          <input
+            autoFocus
+            className={styles.renameInput}
+            value={newPageName}
+            onChange={(e) => setNewPageName(e.target.value)}
+            onBlur={commitNewPage}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+              if (e.key === "Escape") {
+                setNewPageName("");
+                setAddingPage(false);
+              }
+            }}
+          />
+        ) : (
+          <button
+            type="button"
+            aria-label={t("page.addAria")}
+            className={styles.addButton}
+            onClick={() => setAddingPage(true)}
+          >
+            +
+          </button>
+        )}
+      </div>
     </nav>
   );
 }

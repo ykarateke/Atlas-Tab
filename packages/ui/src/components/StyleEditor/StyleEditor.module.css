@@ -58,6 +58,45 @@
   border-top: 0.5px solid rgb(255 255 255 / 10%);
 }
 
+.sectionTitle[data-first] {
+  padding-top: 0;
+  border-top: none;
+}
+
+.wallpaperGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  max-height: 168px;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.wallpaperThumb {
+  aspect-ratio: 16 / 10;
+  border-radius: 6px;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  background-color: rgb(255 255 255 / 4%);
+  padding: 0;
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s,
+    border-color 0.15s;
+}
+
+.wallpaperThumb:hover {
+  box-shadow: 0 0 0 1.5px rgb(255 255 255 / 50%);
+  transform: scale(1.04);
+}
+
+.wallpaperThumbActive {
+  border-color: var(--accent-color, #fff);
+}
+
 .sliderField {
   display: flex;
   flex-direction: column;

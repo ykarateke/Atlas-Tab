@@ -20,6 +20,11 @@ const layoutProps = {
   onLayoutChange: vi.fn(),
 };
 
+const wallpaperProps = {
+  wallpaperCurrentId: null,
+  onWallpaperChange: vi.fn(),
+};
+
 describe("StyleEditor", () => {
   it("calls onChange with the new opacity when the slider moves", () => {
     const onChange = vi.fn();
@@ -30,6 +35,7 @@ describe("StyleEditor", () => {
         onReset={vi.fn()}
         onClose={vi.fn()}
         {...layoutProps}
+        {...wallpaperProps}
       />,
     );
     const [opacitySlider] = screen.getAllByRole("slider");
@@ -46,6 +52,7 @@ describe("StyleEditor", () => {
         onReset={vi.fn()}
         onClose={vi.fn()}
         {...layoutProps}
+        {...wallpaperProps}
       />,
     );
     await userEvent.click(screen.getByText("Bold"));
@@ -62,6 +69,7 @@ describe("StyleEditor", () => {
         onReset={onReset}
         onClose={onClose}
         {...layoutProps}
+        {...wallpaperProps}
       />,
     );
     await userEvent.click(screen.getByText("Reset"));
@@ -79,6 +87,7 @@ describe("StyleEditor", () => {
         onReset={vi.fn()}
         onClose={vi.fn()}
         {...layoutProps}
+        {...wallpaperProps}
         onLayoutChange={onLayoutChange}
       />,
     );
@@ -99,11 +108,32 @@ describe("StyleEditor", () => {
         maxColumns={9}
         boardWidthPx={220}
         onLayoutChange={onLayoutChange}
+        {...wallpaperProps}
       />,
     );
     const sliders = screen.getAllByRole("slider");
     const widthSlider = sliders[sliders.length - 1]!;
     expect(Number(widthSlider.getAttribute("max"))).toBeLessThan(220 * 2); // sane cap, not runaway
+  });
+
+  it("renders a thumbnail for every bundled wallpaper and selects one on click", async () => {
+    const onWallpaperChange = vi.fn();
+    render(
+      <StyleEditor
+        themeStyle={themeStyle}
+        onChange={vi.fn()}
+        onReset={vi.fn()}
+        onClose={vi.fn()}
+        {...layoutProps}
+        wallpaperCurrentId={null}
+        onWallpaperChange={onWallpaperChange}
+      />,
+    );
+    const thumbs = document.querySelectorAll('[class*="wallpaperThumb"]');
+    expect(thumbs.length).toBeGreaterThanOrEqual(25);
+
+    await userEvent.click(thumbs[6]!); // 07.jpg
+    expect(onWallpaperChange).toHaveBeenCalledWith("07.jpg");
   });
 });
 

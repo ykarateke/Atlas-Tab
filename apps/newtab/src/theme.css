@@ -1,12 +1,12 @@
 /*
  * Global design tokens, ported from Markmez v1's style.css :root block and
  * default themeStyle values (matches packages/core's createDefaultAppState).
- * The dynamic Style Editor / wallpaper picker that lets a user change these
- * is Phase 2 — for now they're static, but every component already reads
- * them via these custom properties so wiring up the editor later won't
- * require touching component CSS again.
+ * applyThemeStyle()/applyWallpaper() in apps/newtab keep these in sync with
+ * live state — every component reads them via these custom properties, so
+ * the Style Editor never needs to touch component CSS directly.
  */
 :root {
+  --wallpaper-url: url("/wallpapers/18.jpg");
   --board-rgb: 255, 255, 255;
   --board-alpha: 0.05;
   --board-alpha-hover: 0.1;
@@ -46,7 +46,12 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  background: #0d1117 url("/wallpapers/18.jpg") center / cover no-repeat fixed;
+  background-color: #0d1117;
+  background-image: var(--wallpaper-url);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   overflow: hidden;
 }
 

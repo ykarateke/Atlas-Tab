@@ -11,11 +11,19 @@ export interface StyleEditorProps {
   maxColumns: AppSettings["maxBoardColumns"];
   boardWidthPx: AppSettings["boardWidthPx"];
   onLayoutChange: (updates: Pick<AppSettings, "maxBoardColumns" | "boardWidthPx">) => void;
+  wallpaperCurrentId: string | null;
+  onWallpaperChange: (id: string) => void;
 }
 
 const TEXT_SCALES: ThemeStyle["textScale"][] = [0.9, 1, 1.15];
 const COLUMN_OPTIONS = [4, 5, 6, 7, 8, 9] as const;
 const MAX_BOARD_WIDTH_AUTO = 400;
+// public/wallpapers/01.jpg .. 25.jpg — bundled presets (see
+// public/wallpapers/ATTRIBUTIONS.md). Upload/history is a later phase.
+const BUNDLED_WALLPAPERS = Array.from(
+  { length: 25 },
+  (_, i) => `${String(i + 1).padStart(2, "0")}.jpg`,
+);
 
 // FEATURE_SPECS.md § Settings: board width's max is "dynamically capped by
 // what the current column count can actually fit" — approximated from the
@@ -39,6 +47,8 @@ export function StyleEditor({
   maxColumns,
   boardWidthPx,
   onLayoutChange,
+  wallpaperCurrentId,
+  onWallpaperChange,
 }: StyleEditorProps) {
   const t = useTranslation();
   const widthCap = maxBoardWidthFor(maxColumns);
@@ -46,6 +56,21 @@ export function StyleEditor({
 
   return (
     <div className={styles.body}>
+      <div className={styles.sectionTitle} data-first>
+        {t("style.wallpaperTitle")}
+      </div>
+      <div className={styles.wallpaperGrid}>
+        {BUNDLED_WALLPAPERS.map((file) => (
+          <button
+            key={file}
+            type="button"
+            className={`${styles.wallpaperThumb} ${file === wallpaperCurrentId ? styles.wallpaperThumbActive : ""}`}
+            style={{ backgroundImage: `url("/wallpapers/${file}")` }}
+            onClick={() => onWallpaperChange(file)}
+          />
+        ))}
+      </div>
+
       <div className={styles.colorRow}>
         <label className={styles.field}>
           <span className={styles.label}>{t("style.accentColor")}</span>

@@ -68,6 +68,8 @@ interface AppStore {
   updateWeatherConfig: (updates: Partial<WeatherConfig>) => void;
   refreshWeatherNow: () => Promise<void>;
   searchCity: (query: string) => Promise<GeocodeResult[]>;
+
+  setWallpaper: (currentId: string | null) => void;
 }
 
 export const useAppStore = create<AppStore>((set, get) => {
@@ -130,5 +132,7 @@ export const useAppStore = create<AppStore>((set, get) => {
       apply((s) => core.updateWeatherConfig(s, { cache: updated.cache }));
     },
     searchCity: (query) => core.geocodeCity(query, fetch),
+
+    setWallpaper: (currentId) => apply((s) => core.setCurrentWallpaper(s, currentId)),
   };
 });
