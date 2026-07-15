@@ -1,9 +1,10 @@
 import { useState } from "react";
 import type { KeyboardEvent, ReactNode } from "react";
-import { useSortable } from "@dnd-kit/sortable";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import type { Board as BoardData } from "@atlas-tab/core";
 import { useTranslation } from "../../i18n/I18nContext";
+import { combineRefs } from "../../dnd/combineRefs";
 import { GripIcon, MoreIcon } from "../../icons/Icons";
 import styles from "./Board.module.css";
 
@@ -20,14 +21,21 @@ export function Board({ board, onRename, onDelete, children }: BoardProps) {
   const [draftName, setDraftName] = useState(board.name);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+  // Plain draggable + droppable (not dnd-kit's "sortable" preset, which
+  // scopes its collision detection to a single SortableContext) — boards
+  // need to be draggable *across* per-column containers, which sortable
+  // makes unreliable. Both hooks share one DOM node via combineRefs.
+  const { attributes, listeners, setNodeRef: setDragRef, transform, isDragging } = useDraggable({
     id: board.id,
+    data: { type: "board", col: board.col, row: board.row },
+  });
+  const { setNodeRef: setDropRef, isOver } = useDroppable({
+    id: `board-drop-${board.id}`,
     data: { type: "board", col: board.col, row: board.row },
   });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
+    transform: CSS.Translate.toString(transform),
   };
 
   function commitRename() {
@@ -47,9 +55,9 @@ export function Board({ board, onRename, onDelete, children }: BoardProps) {
 
   return (
     <div
-      ref={setNodeRef}
+      ref={combineRefs(setDragRef, setDropRef)}
       style={style}
-      className={`${styles.board} ${isDragging ? styles.dragging : ""}`}
+      className={`${styles.board} ${isDragging ? styles.dragging : ""} ${isOver ? styles.dropTarget : ""}`}
     >
       <div className={styles.header}>
         <button

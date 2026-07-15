@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useSortable } from "@dnd-kit/sortable";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
 import type { Bookmark } from "@atlas-tab/core";
 import { useFavicon } from "../../favicon/FaviconContext";
 import { useTranslation } from "../../i18n/I18nContext";
+import { combineRefs } from "../../dnd/combineRefs";
 import { GripIcon, MoreIcon } from "../../icons/Icons";
 import styles from "./BookmarkItem.module.css";
 
@@ -27,18 +28,25 @@ export function BookmarkItem({
   const t = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const favicon = useFavicon(bookmark.url);
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+
+  // Plain draggable + droppable, not sortable — see Board.tsx for why
+  // (cross-container drops need to escape the per-board SortableContext).
+  const { attributes, listeners, setNodeRef: setDragRef, transform, isDragging } = useDraggable({
     id: bookmark.id,
     data: { type: "bookmark", boardId: bookmark.boardId, order: bookmark.order },
   });
+  const { setNodeRef: setDropRef, isOver } = useDroppable({
+    id: `bookmark-drop-${bookmark.id}`,
+    data: { type: "bookmark", boardId: bookmark.boardId, order: bookmark.order },
+  });
 
-  const style = { transform: CSS.Transform.toString(transform), transition };
+  const style = { transform: CSS.Translate.toString(transform) };
 
   return (
     <div
-      ref={setNodeRef}
+      ref={combineRefs(setDragRef, setDropRef)}
       style={style}
-      className={`${styles.item} ${isDragging ? styles.dragging : ""}`}
+      className={`${styles.item} ${isDragging ? styles.dragging : ""} ${isOver ? styles.dropTarget : ""}`}
     >
       <button
         type="button"

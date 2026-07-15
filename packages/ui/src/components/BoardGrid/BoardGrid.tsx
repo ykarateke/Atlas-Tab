@@ -9,7 +9,6 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Board as BoardData, NewBoard } from "@atlas-tab/core";
 import { Board } from "../Board/Board";
 import { NewBoardCell } from "./NewBoardCell";
@@ -119,32 +118,26 @@ export function BoardGrid({
     >
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         {columns.map((columnBoards, col) => (
-          <SortableContext
-            key={col}
-            items={columnBoards.map((b) => b.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className={styles.column} style={{ gridColumn: col + 1 }}>
-              {columnBoards.map((board) => (
-                <Board
-                  key={board.id}
-                  board={board}
-                  onRename={(name) => onRenameBoard(board.id, name)}
-                  onDelete={() => onDeleteBoard(board.id)}
-                >
-                  {renderBody(board)}
-                </Board>
-              ))}
-              <ColumnEndDroppable col={col}>
-                <NewBoardCell
-                  pageId={pageId}
-                  col={col}
-                  row={columnBoards.length}
-                  onCreate={onCreateBoard}
-                />
-              </ColumnEndDroppable>
-            </div>
-          </SortableContext>
+          <div key={col} className={styles.column} style={{ gridColumn: col + 1 }}>
+            {columnBoards.map((board) => (
+              <Board
+                key={board.id}
+                board={board}
+                onRename={(name) => onRenameBoard(board.id, name)}
+                onDelete={() => onDeleteBoard(board.id)}
+              >
+                {renderBody(board)}
+              </Board>
+            ))}
+            <ColumnEndDroppable col={col}>
+              <NewBoardCell
+                pageId={pageId}
+                col={col}
+                row={columnBoards.length}
+                onCreate={onCreateBoard}
+              />
+            </ColumnEndDroppable>
+          </div>
         ))}
       </DndContext>
     </div>

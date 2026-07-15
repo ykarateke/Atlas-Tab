@@ -19,6 +19,10 @@
   opacity: 0.4;
 }
 
+.dropTarget {
+  background: var(--accent-tab-bg, rgb(255 255 255 / 18%));
+}
+
 .dragHandle {
   display: flex;
   align-items: center;

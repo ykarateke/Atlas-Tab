@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useDroppable } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import type { Bookmark } from "@atlas-tab/core";
 import { BookmarkItem } from "../BookmarkItem/BookmarkItem";
 import { BookmarkForm, type BookmarkFormValues } from "../BookmarkForm/BookmarkForm";
@@ -48,24 +47,19 @@ export function BookmarksBoardBody({
 
   return (
     <div className={styles.body}>
-      <SortableContext
-        items={visibleBookmarks.map((bk) => bk.id)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div ref={setEndDroppableRef} className={styles.list}>
-          {visibleBookmarks.map((bookmark) => (
-            <BookmarkItem
-              key={bookmark.id}
-              bookmark={bookmark}
-              openInNewTab={openInNewTab}
-              onOpenBackground={onOpenBackground}
-              onOpenIncognito={onOpenIncognito}
-              onEdit={(bk) => setFormMode(bk)}
-              onDelete={onDeleteBookmark}
-            />
-          ))}
-        </div>
-      </SortableContext>
+      <div ref={setEndDroppableRef} className={styles.list}>
+        {visibleBookmarks.map((bookmark) => (
+          <BookmarkItem
+            key={bookmark.id}
+            bookmark={bookmark}
+            openInNewTab={openInNewTab}
+            onOpenBackground={onOpenBackground}
+            onOpenIncognito={onOpenIncognito}
+            onEdit={(bk) => setFormMode(bk)}
+            onDelete={onDeleteBookmark}
+          />
+        ))}
+      </div>
 
       {hiddenCount > 0 && (
         <button type="button" className={styles.showMore} onClick={() => setExpanded(true)}>
