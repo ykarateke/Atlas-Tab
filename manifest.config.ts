@@ -18,5 +18,5 @@ export default defineManifest({
     service_worker: "apps/background/src/index.ts",
     type: "module",
   },
-  permissions: ["storage", "identity", "unlimitedStorage", "search"],
+  permissions: ["storage", "identity", "unlimitedStorage", "search", "favicon"],
 });

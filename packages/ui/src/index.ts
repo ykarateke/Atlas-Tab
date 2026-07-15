@@ -1,3 +1,9 @@
-// Shared React components (Board, Bookmark, widgets, modals) land here starting Phase 1.
-// See ARCHITECTURE.md § 3 and ROADMAP.md Phase 1/2.
-export {};
+export * from "./components/PageTabs/PageTabs";
+export * from "./components/BoardGrid/BoardGrid";
+export * from "./components/Board/Board";
+export * from "./components/PlaceholderBoardBody/PlaceholderBoardBody";
+export * from "./components/BookmarksBoardBody/BookmarksBoardBody";
+export * from "./components/BookmarkItem/BookmarkItem";
+export * from "./components/BookmarkForm/BookmarkForm";
+export * from "./components/TrashPanel/TrashPanel";
+export * from "./favicon";

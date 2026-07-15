@@ -1,0 +1,47 @@
+.grid {
+  display: grid;
+  align-items: start;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.columnEnd {
+  display: flex;
+}
+
+.newBoardButton {
+  border: 1px dashed rgb(255 255 255 / 30%);
+  background: none;
+  border-radius: 10px;
+  min-height: 48px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 20px;
+  opacity: 0.6;
+}
+
+.newBoardButton:hover {
+  opacity: 1;
+}
+
+.newBoardForm {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgb(255 255 255 / 30%);
+  width: 100%;
+}
+
+.newBoardForm select,
+.newBoardForm input {
+  font: inherit;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid rgb(0 0 0 / 30%);
+}

@@ -1,3 +1,4 @@
-// Favicon fallback-chain resolution + cache lands here in Phase 1.
-// See FEATURE_SPECS.md § Favicons and ROADMAP.md Phase 1.
-export {};
+export * from "./google-brand-map";
+export * from "./resolve";
+export * from "./cache";
+export * from "./get-favicon";

@@ -1,0 +1,99 @@
+.item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  border-radius: 6px;
+}
+
+.item:hover {
+  background: rgb(255 255 255 / 6%);
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.dragHandle {
+  border: none;
+  background: none;
+  cursor: grab;
+  padding: 2px 4px;
+  opacity: 0;
+  line-height: 1;
+}
+
+.item:hover .dragHandle {
+  opacity: 0.5;
+}
+
+.favicon,
+.faviconPlaceholder {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border-radius: 3px;
+}
+
+.faviconPlaceholder {
+  background: rgb(255 255 255 / 15%);
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.title:hover {
+  text-decoration: underline;
+}
+
+.menuWrapper {
+  position: relative;
+}
+
+.menuButton {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  opacity: 0;
+}
+
+.item:hover .menuButton {
+  opacity: 0.6;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 10;
+  background: white;
+  color: black;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 20%);
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.menu button {
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 8px 12px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.menu button:hover {
+  background: rgb(0 0 0 / 8%);
+}
