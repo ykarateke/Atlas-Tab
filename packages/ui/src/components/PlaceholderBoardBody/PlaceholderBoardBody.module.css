@@ -1,6 +1,6 @@
 .placeholder {
-  opacity: 0.6;
-  font-size: 13px;
+  color: var(--board-text-dim, rgb(255 255 255 / 32%));
+  font-size: calc(13px * var(--board-text-scale, 1));
   margin: 0;
   padding: 12px 0;
 }

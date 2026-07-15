@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BoardGrid,
   BookmarksBoardBody,
@@ -12,6 +12,7 @@ import { getFavicon } from "@atlas-tab/core";
 import type { Bookmark, Board as BoardData } from "@atlas-tab/core";
 import { useAppStore } from "./store/useAppStore";
 import { chromeStorageAdapter } from "./store/chromeStorageAdapter";
+import styles from "./App.module.css";
 
 function buildExtensionFaviconUrl(pageUrl: string): string {
   return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=48`;
@@ -53,6 +54,8 @@ export function App() {
     emptyTrash,
   } = useAppStore();
 
+  const [trashOpen, setTrashOpen] = useState(false);
+
   useEffect(() => {
     void hydrate();
   }, [hydrate]);
@@ -67,6 +70,7 @@ export function App() {
 
   const activePageBoards = state.boards.filter((b) => b.pageId === state.activePageId);
   const bookmarksByBoardId = groupBookmarksByBoard(state.bookmarks);
+  const trashCount = state.trash.boards.length + state.trash.bookmarks.length;
 
   function renderBody(board: BoardData) {
     if (board.type === "bookmarks") {
@@ -90,38 +94,75 @@ export function App() {
 
   return (
     <FaviconProvider value={resolveFavicon}>
-      <main>
-        <PageTabs
-          pages={state.pages}
-          activePageId={state.activePageId}
-          onSelectPage={setActivePage}
-          onAddPage={addPage}
-          onRenamePage={renamePage}
-          onDeletePage={deletePage}
-          onReorderPages={reorderPages}
-        />
-        <BoardGrid
-          pageId={state.activePageId}
-          boards={activePageBoards}
-          boardWidthPx={state.settings.boardWidthPx}
-          maxColumns={state.settings.maxBoardColumns}
-          renderBody={renderBody}
-          onCreateBoard={createBoard}
-          onRenameBoard={renameBoard}
-          onDeleteBoard={deleteBoard}
-          onMoveBoard={moveBoard}
-          onMoveBookmark={moveBookmark}
-        />
-        <TrashPanel
-          trashedBoards={state.trash.boards}
-          trashedBookmarks={state.trash.bookmarks}
-          onRestoreBoard={restoreBoard}
-          onPermanentlyDeleteBoard={permanentlyDeleteBoard}
-          onRestoreBookmark={restoreBookmark}
-          onPermanentlyDeleteBookmark={permanentlyDeleteBookmark}
-          onEmptyTrash={emptyTrash}
-        />
-      </main>
+      <div className={styles.app}>
+        <header className={styles.topbar}>
+          <PageTabs
+            pages={state.pages}
+            activePageId={state.activePageId}
+            onSelectPage={setActivePage}
+            onAddPage={addPage}
+            onRenamePage={renamePage}
+            onDeletePage={deletePage}
+            onReorderPages={reorderPages}
+          />
+        </header>
+
+        <div className={styles.boardsArea}>
+          <BoardGrid
+            pageId={state.activePageId}
+            boards={activePageBoards}
+            boardWidthPx={state.settings.boardWidthPx}
+            maxColumns={state.settings.maxBoardColumns}
+            renderBody={renderBody}
+            onCreateBoard={createBoard}
+            onRenameBoard={renameBoard}
+            onDeleteBoard={deleteBoard}
+            onMoveBoard={moveBoard}
+            onMoveBookmark={moveBookmark}
+          />
+        </div>
+
+        <button
+          type="button"
+          className={styles.trashToggle}
+          aria-label="Open trash"
+          onClick={() => setTrashOpen(true)}
+        >
+          🗑{trashCount > 0 && <span className={styles.trashBadge}>{trashCount}</span>}
+        </button>
+
+        {trashOpen && (
+          <div
+            className={styles.trashOverlay}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setTrashOpen(false);
+            }}
+          >
+            <div className={styles.trashModal}>
+              <div className={styles.trashModalHeader}>
+                <span>Trash</span>
+                <button
+                  type="button"
+                  aria-label="Close trash"
+                  className={styles.trashCloseBtn}
+                  onClick={() => setTrashOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <TrashPanel
+                trashedBoards={state.trash.boards}
+                trashedBookmarks={state.trash.bookmarks}
+                onRestoreBoard={restoreBoard}
+                onPermanentlyDeleteBoard={permanentlyDeleteBoard}
+                onRestoreBookmark={restoreBookmark}
+                onPermanentlyDeleteBookmark={permanentlyDeleteBookmark}
+                onEmptyTrash={emptyTrash}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </FaviconProvider>
   );
 }

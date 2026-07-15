@@ -1,43 +1,88 @@
 .tabRow {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  overflow-x: auto;
+  gap: 2px;
+  max-width: 100%;
+  background: rgba(var(--board-rgb, 255, 255, 255), var(--board-alpha, 0.05));
+  border-radius: 16px;
   padding: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: relative;
+  isolation: isolate;
+  box-shadow: var(--shadow-soft, 0 0 24px rgb(0 0 0 / 22%));
+}
+
+.tabRow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  backdrop-filter: blur(var(--board-blur, 12px));
+  -webkit-backdrop-filter: blur(var(--board-blur, 12px));
+  z-index: -1;
+  pointer-events: none;
+}
+
+.tabRow::-webkit-scrollbar {
+  display: none;
 }
 
 .tab {
   display: flex;
   align-items: center;
-  gap: 4px;
-  border-radius: 6px;
-  padding: 2px 4px;
+  gap: 2px;
+  border-radius: 13px;
   cursor: grab;
   flex: 0 0 auto;
+  color: var(--board-text-secondary, rgb(255 255 255 / 60%));
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.tab:hover {
+  background: var(--board-hover-bg, rgb(255 255 255 / 8%));
+  color: var(--board-text, rgb(255 255 255 / 90%));
 }
 
 .tabActive {
-  background: rgb(0 0 0 / 8%);
+  background: var(--accent-tab-bg, rgb(255 255 255 / 18%));
+  color: var(--accent-tab-text, #fff);
+}
+
+.tabActive:hover {
+  background: var(--accent-tab-bg, rgb(255 255 255 / 18%));
 }
 
 .tabDragging {
-  opacity: 0.5;
+  opacity: 0.35;
 }
 
 .tabLabel {
   background: none;
   border: none;
-  padding: 6px 8px;
+  height: 36px;
+  padding: 0 16px;
   cursor: inherit;
   font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: inherit;
   white-space: nowrap;
 }
 
 .renameInput {
   font: inherit;
-  padding: 5px 7px;
-  border: 1px solid rgb(0 0 0 / 30%);
-  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  height: 36px;
+  padding: 0 14px;
+  background: rgb(0 0 0 / 20%);
+  border: none;
+  border-radius: 13px;
+  color: var(--board-text, #fff);
+  outline: none;
 }
 
 .deleteButton {
@@ -47,7 +92,8 @@
   opacity: 0;
   line-height: 1;
   font-size: 14px;
-  padding: 2px 4px;
+  padding: 4px 8px 4px 2px;
+  color: inherit;
 }
 
 .tab:hover .deleteButton {
@@ -56,13 +102,25 @@
 
 .deleteButton:hover {
   opacity: 1 !important;
+  color: #ff6b6b;
 }
 
 .addButton {
   border: none;
   background: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 13px;
   cursor: pointer;
   font-size: 16px;
-  padding: 4px 10px;
+  color: var(--board-text-dim, rgb(255 255 255 / 32%));
   flex: 0 0 auto;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.addButton:hover {
+  background: var(--board-hover-bg, rgb(255 255 255 / 8%));
+  color: var(--board-text, #fff);
 }

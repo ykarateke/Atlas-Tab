@@ -1,12 +1,13 @@
 .grid {
   display: grid;
   align-items: start;
+  width: fit-content;
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .columnEnd {
@@ -14,34 +15,47 @@
 }
 
 .newBoardButton {
-  border: 1px dashed rgb(255 255 255 / 30%);
+  border: 0.5px dashed var(--board-text-dim, rgb(255 255 255 / 20%));
   background: none;
-  border-radius: 10px;
+  border-radius: var(--radius-lg, 14px);
   min-height: 48px;
   width: 100%;
   cursor: pointer;
-  font-size: 20px;
-  opacity: 0.6;
+  font-size: 18px;
+  color: var(--board-text-dim, rgb(255 255 255 / 32%));
+  transition:
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .newBoardButton:hover {
-  opacity: 1;
+  color: var(--board-text, #fff);
+  border-color: var(--board-text-secondary, rgb(255 255 255 / 50%));
 }
 
 .newBoardForm {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 8px;
-  border-radius: 10px;
-  border: 1px solid rgb(255 255 255 / 30%);
+  padding: 10px;
+  border-radius: var(--radius-lg, 14px);
+  background: rgba(var(--board-rgb, 255, 255, 255), var(--board-alpha, 0.05));
+  box-shadow: var(--shadow-soft, 0 0 24px rgb(0 0 0 / 22%));
   width: 100%;
 }
 
 .newBoardForm select,
 .newBoardForm input {
   font: inherit;
-  padding: 6px 8px;
-  border-radius: 4px;
-  border: 1px solid rgb(0 0 0 / 30%);
+  font-size: 13px;
+  padding: 7px 9px;
+  border-radius: var(--radius-sm, 7px);
+  border: 0.5px solid var(--board-text-dim, rgb(255 255 255 / 20%));
+  background: var(--board-hover-bg, rgb(255 255 255 / 8%));
+  color: var(--board-text, #fff);
+  outline: none;
+}
+
+.newBoardForm select option {
+  color: #000;
 }

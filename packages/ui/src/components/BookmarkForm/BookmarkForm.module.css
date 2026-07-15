@@ -1,40 +1,72 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 4px;
+  gap: 6px;
+  padding: 10px;
+  margin-top: 4px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 0.5px solid var(--board-text-dim, rgb(255 255 255 / 20%));
+  border-radius: var(--radius-md, 10px);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 12px;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--board-text-dim, rgb(255 255 255 / 45%));
 }
 
 .field input,
 .field textarea {
   font: inherit;
-  padding: 6px 8px;
-  border-radius: 4px;
-  border: 1px solid rgb(0 0 0 / 30%);
+  font-size: 12px;
+  padding: 6px 9px;
+  border-radius: var(--radius-sm, 7px);
+  border: 0.5px solid var(--board-text-dim, rgb(255 255 255 / 20%));
+  background: var(--board-hover-bg, rgb(255 255 255 / 8%));
+  color: var(--board-text, #fff);
+  outline: none;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--board-text-secondary, rgb(255 255 255 / 50%));
 }
 
 .actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 6px;
+  margin-top: 2px;
 }
 
 .actions button {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 0.5px solid rgb(255 255 255 / 10%);
   cursor: pointer;
   font: inherit;
+  font-size: 12px;
+  background: rgb(255 255 255 / 7%);
+  color: rgb(255 255 255 / 55%);
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.actions button:hover {
+  background: rgb(255 255 255 / 13%);
+  color: #fff;
 }
 
 .actions button[type="submit"] {
-  background: #1a73e8;
-  color: white;
+  background: var(--accent-tab-bg, rgb(255 255 255 / 15%));
+  border-color: var(--accent-tab-border, rgb(255 255 255 / 22%));
+  color: var(--accent-tab-text, #fff);
+}
+
+.actions button[type="submit"]:hover {
+  filter: brightness(1.12);
 }
