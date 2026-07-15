@@ -91,4 +91,10 @@ export const en = {
 
   "focusStats.today": "Today",
   "focusStats.openAria": "Focus stats",
+
+  "widget.galleryTitle": "Widgets",
+  "widget.add": "Add",
+  "widget.clock": "Clock",
+  "widget.weather": "Weather",
+  "app.openWidgetGallery": "Add widget",
 };

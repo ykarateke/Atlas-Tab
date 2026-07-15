@@ -92,4 +92,10 @@ export const tr: Record<keyof typeof en, string> = {
 
   "focusStats.today": "Bugün",
   "focusStats.openAria": "Odak istatistikleri",
+
+  "widget.galleryTitle": "Widget'lar",
+  "widget.add": "Ekle",
+  "widget.clock": "Saat",
+  "widget.weather": "Hava Durumu",
+  "app.openWidgetGallery": "Widget ekle",
 };

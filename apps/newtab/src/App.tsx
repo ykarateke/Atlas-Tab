@@ -11,17 +11,19 @@ import {
   NotesBoardBody,
   PageTabs,
   PlaceholderBoardBody,
+  PlusIcon,
   PomodoroBoardBody,
   SlidersIcon,
   StyleEditor,
   TrashIcon,
   TrashPanel,
   WeatherWidget,
+  WidgetGallery,
   fetchAndEncode,
   useTranslation,
 } from "@atlas-tab/ui";
 import { getFavicon, getPomodoroTimer, isWeatherCacheStale, resolveLocale } from "@atlas-tab/core";
-import type { Bookmark, Board as BoardData } from "@atlas-tab/core";
+import type { Bookmark, Board as BoardData, BoardType, NewBoard } from "@atlas-tab/core";
 import { useAppStore } from "./store/useAppStore";
 import { chromeStorageAdapter } from "./store/chromeStorageAdapter";
 import { applyThemeStyle } from "./applyThemeStyle";
@@ -33,6 +35,57 @@ function buildExtensionFaviconUrl(pageUrl: string): string {
 
 function msUntilNextMinute(now: Date): number {
   return (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
+}
+
+// Adding a board from the Widget Gallery has no specific column in mind (the
+// grid's own "+" cell already covers that), so it lands in whichever column
+// on the active page currently has the fewest boards, appended to the end.
+function findBoardPlacement(boards: BoardData[], pageId: string): { col: number; row: number } {
+  const pageBoards = boards.filter((b) => b.pageId === pageId);
+  if (pageBoards.length === 0) return { col: 0, row: 0 };
+
+  const maxCol = Math.max(...pageBoards.map((b) => b.col));
+  let bestCol = 0;
+  let bestCount = Infinity;
+  for (let col = 0; col <= maxCol + 1; col++) {
+    const count = pageBoards.filter((b) => b.col === col).length;
+    if (count < bestCount) {
+      bestCount = count;
+      bestCol = col;
+    }
+  }
+  return { col: bestCol, row: bestCount };
+}
+
+function buildNewBoardDraft(
+  type: BoardType,
+  pageId: string,
+  col: number,
+  row: number,
+  name: string,
+): NewBoard {
+  const base = { pageId, col, row, name };
+  switch (type) {
+    case "bookmarks":
+      return { ...base, type };
+    case "notes":
+      return { ...base, type, content: "", height: 160 };
+    case "calendar":
+      return { ...base, type };
+    case "pomodoro":
+      return {
+        ...base,
+        type,
+        settings: {
+          focusMinutes: 25,
+          shortBreakMinutes: 5,
+          longBreakMinutes: 15,
+          cyclesBeforeLongBreak: 4,
+        },
+      };
+    case "search":
+      return { ...base, type, searchEngineId: "default" };
+  }
 }
 
 function groupBookmarksByBoard(bookmarks: Bookmark[]): Map<string, Bookmark[]> {
@@ -101,6 +154,7 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
 
   const [trashOpen, setTrashOpen] = useState(false);
   const [styleEditorOpen, setStyleEditorOpen] = useState(false);
+  const [widgetGalleryOpen, setWidgetGalleryOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
@@ -193,12 +247,14 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
             onReorderPages={reorderPages}
           />
           <div className={styles.topWidgets}>
-            <WeatherWidget
-              config={state.weather}
-              onConfigChange={updateWeatherConfig}
-              onSearchCity={searchCity}
-              onRefresh={refreshWeatherNow}
-            />
+            {state.weather.enabled && (
+              <WeatherWidget
+                config={state.weather}
+                onConfigChange={updateWeatherConfig}
+                onSearchCity={searchCity}
+                onRefresh={refreshWeatherNow}
+              />
+            )}
             {hasPomodoroBoard && <FocusStatsWidget now={now} focusStats={state.focusStats} />}
             {state.settings.clockEnabled && (
               <ClockWidget
@@ -226,6 +282,14 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
         </div>
 
         <div className={styles.fabStack}>
+          <button
+            type="button"
+            className={styles.fab}
+            aria-label={t("app.openWidgetGallery")}
+            onClick={() => setWidgetGalleryOpen(true)}
+          >
+            <PlusIcon width={18} height={18} />
+          </button>
           <button
             type="button"
             className={styles.fab}
@@ -312,6 +376,41 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
                 maxColumns={state.settings.maxBoardColumns}
                 boardWidthPx={state.settings.boardWidthPx}
                 onLayoutChange={updateSettings}
+              />
+            </div>
+          </div>
+        )}
+
+        {widgetGalleryOpen && (
+          <div
+            className={styles.modalOverlay}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setWidgetGalleryOpen(false);
+            }}
+          >
+            <div className={styles.modal}>
+              <div className={styles.modalHeader}>
+                <span>{t("widget.galleryTitle")}</span>
+                <button
+                  type="button"
+                  aria-label={t("style.close")}
+                  className={styles.modalCloseBtn}
+                  onClick={() => setWidgetGalleryOpen(false)}
+                >
+                  <CloseIcon width={14} height={14} />
+                </button>
+              </div>
+              <WidgetGallery
+                clockEnabled={state.settings.clockEnabled}
+                weatherEnabled={state.weather.enabled}
+                onToggleClock={(enabled) => updateSettings({ clockEnabled: enabled })}
+                onToggleWeather={(enabled) => updateWeatherConfig({ enabled })}
+                onAddBoard={(type) => {
+                  const { col, row } = findBoardPlacement(state.boards, state.activePageId);
+                  const name = t(`board.type.${type}`);
+                  createBoard(buildNewBoardDraft(type, state.activePageId, col, row, name));
+                  setWidgetGalleryOpen(false);
+                }}
               />
             </div>
           </div>

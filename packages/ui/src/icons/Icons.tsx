@@ -141,3 +141,60 @@ export function CloudIcon(props: IconProps) {
     </BaseIcon>
   );
 }
+
+export function BoardIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <rect x="2" y="3" width="20" height="18" rx="3" />
+      <line x1="8" y1="9" x2="16" y2="9" />
+      <line x1="8" y1="13" x2="14" y2="13" />
+    </BaseIcon>
+  );
+}
+
+export function EditIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+    </BaseIcon>
+  );
+}
+
+export function CalendarIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </BaseIcon>
+  );
+}
+
+export function TimerIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12 7 12 12 15 15" />
+    </BaseIcon>
+  );
+}
+
+export function ClockIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12 7 12 12 16 12" />
+    </BaseIcon>
+  );
+}
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </BaseIcon>
+  );
+}
