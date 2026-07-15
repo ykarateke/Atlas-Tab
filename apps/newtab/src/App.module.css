@@ -14,8 +14,16 @@
   isolation: isolate;
 }
 
-.topbarSpacer {
+.pageTabsSlot {
   grid-column: 1;
+  justify-self: start;
+  min-width: 0;
+}
+
+.navSearchSlot {
+  grid-column: 2;
+  display: flex;
+  justify-content: center;
 }
 
 .topWidgets {

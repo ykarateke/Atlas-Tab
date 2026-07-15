@@ -97,4 +97,16 @@ export const en = {
   "widget.clock": "Clock",
   "widget.weather": "Weather",
   "app.openWidgetGallery": "Add widget",
+
+  "searchEngine.default": "Default",
+  "searchEngine.google": "Google",
+  "searchEngine.yandex": "Yandex",
+  "searchEngine.bing": "Bing",
+  "searchEngine.duckduckgo": "DuckDuckGo",
+  "searchEngine.youtube": "YouTube",
+  "searchEngine.ecosia": "Ecosia",
+
+  "navSearch.placeholder": "Search the web…",
+  "navSearch.engineAria": "Search engine",
+  "widget.navSearch": "Search Bar",
 };

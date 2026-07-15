@@ -14,6 +14,7 @@ export * from "./components/WeatherWidget/WeatherWidget";
 export * from "./components/ClockWidget/ClockWidget";
 export * from "./components/FocusStatsWidget/FocusStatsWidget";
 export * from "./components/WidgetGallery/WidgetGallery";
+export * from "./components/NavSearchBar/NavSearchBar";
 export * from "./favicon";
 export * from "./i18n";
 export * from "./icons";

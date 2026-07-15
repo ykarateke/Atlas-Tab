@@ -8,6 +8,7 @@ import {
   FaviconProvider,
   FocusStatsWidget,
   I18nProvider,
+  NavSearchBar,
   NotesBoardBody,
   PageTabs,
   PlaceholderBoardBody,
@@ -22,8 +23,14 @@ import {
   fetchAndEncode,
   useTranslation,
 } from "@atlas-tab/ui";
-import { getFavicon, getPomodoroTimer, isWeatherCacheStale, resolveLocale } from "@atlas-tab/core";
-import type { Bookmark, Board as BoardData, BoardType, NewBoard } from "@atlas-tab/core";
+import {
+  buildSearchUrl,
+  getFavicon,
+  getPomodoroTimer,
+  isWeatherCacheStale,
+  resolveLocale,
+} from "@atlas-tab/core";
+import type { Bookmark, Board as BoardData, BoardType, NewBoard, SearchEngine } from "@atlas-tab/core";
 import { useAppStore } from "./store/useAppStore";
 import { chromeStorageAdapter } from "./store/chromeStorageAdapter";
 import { applyThemeStyle } from "./applyThemeStyle";
@@ -31,6 +38,17 @@ import styles from "./App.module.css";
 
 function buildExtensionFaviconUrl(pageUrl: string): string {
   return `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(pageUrl)}&size=48`;
+}
+
+// "default" has no URL template — it's routed through chrome.search.query,
+// the browser's own default engine (FEATURE_SPECS.md § Search).
+function handleNavSearch(query: string, engineId: SearchEngine["id"]) {
+  const url = buildSearchUrl(engineId, query);
+  if (url) {
+    chrome.tabs.create({ url });
+  } else {
+    chrome.search.query({ text: query, disposition: "NEW_TAB" });
+  }
 }
 
 function msUntilNextMinute(now: Date): number {
@@ -236,16 +254,26 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
     <FaviconProvider value={resolveFavicon}>
       <div className={styles.app}>
         <header className={styles.topbar}>
-          <div className={styles.topbarSpacer} />
-          <PageTabs
-            pages={state.pages}
-            activePageId={state.activePageId}
-            onSelectPage={setActivePage}
-            onAddPage={addPage}
-            onRenamePage={renamePage}
-            onDeletePage={deletePage}
-            onReorderPages={reorderPages}
-          />
+          <div className={styles.pageTabsSlot}>
+            <PageTabs
+              pages={state.pages}
+              activePageId={state.activePageId}
+              onSelectPage={setActivePage}
+              onAddPage={addPage}
+              onRenamePage={renamePage}
+              onDeletePage={deletePage}
+              onReorderPages={reorderPages}
+            />
+          </div>
+          <div className={styles.navSearchSlot}>
+            {state.settings.navSearchEnabled && (
+              <NavSearchBar
+                engineId={state.settings.navSearchEngineId as SearchEngine["id"]}
+                onSearch={handleNavSearch}
+                onEngineChange={(engineId) => updateSettings({ navSearchEngineId: engineId })}
+              />
+            )}
+          </div>
           <div className={styles.topWidgets}>
             {state.weather.enabled && (
               <WeatherWidget
@@ -405,6 +433,8 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
                 weatherEnabled={state.weather.enabled}
                 onToggleClock={(enabled) => updateSettings({ clockEnabled: enabled })}
                 onToggleWeather={(enabled) => updateWeatherConfig({ enabled })}
+                navSearchEnabled={state.settings.navSearchEnabled}
+                onToggleNavSearch={(enabled) => updateSettings({ navSearchEnabled: enabled })}
                 onAddBoard={(type) => {
                   const { col, row } = findBoardPlacement(state.boards, state.activePageId);
                   const name = t(`board.type.${type}`);

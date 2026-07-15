@@ -14,8 +14,10 @@ import styles from "./WidgetGallery.module.css";
 export interface WidgetGalleryProps {
   clockEnabled: boolean;
   weatherEnabled: boolean;
+  navSearchEnabled: boolean;
   onToggleClock: (enabled: boolean) => void;
   onToggleWeather: (enabled: boolean) => void;
+  onToggleNavSearch: (enabled: boolean) => void;
   onAddBoard: (type: BoardType) => void;
 }
 
@@ -48,8 +50,10 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (checked: b
 export function WidgetGallery({
   clockEnabled,
   weatherEnabled,
+  navSearchEnabled,
   onToggleClock,
   onToggleWeather,
+  onToggleNavSearch,
   onAddBoard,
 }: WidgetGalleryProps) {
   const t = useTranslation();
@@ -82,6 +86,14 @@ export function WidgetGallery({
         </div>
         <span className={styles.name}>{t("widget.weather")}</span>
         <Toggle checked={weatherEnabled} onChange={onToggleWeather} />
+      </div>
+
+      <div className={styles.card}>
+        <div className={styles.icon}>
+          <SearchIcon width={20} height={20} />
+        </div>
+        <span className={styles.name}>{t("widget.navSearch")}</span>
+        <Toggle checked={navSearchEnabled} onChange={onToggleNavSearch} />
       </div>
     </div>
   );

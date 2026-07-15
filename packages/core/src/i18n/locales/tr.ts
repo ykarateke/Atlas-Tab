@@ -98,4 +98,16 @@ export const tr: Record<keyof typeof en, string> = {
   "widget.clock": "Saat",
   "widget.weather": "Hava Durumu",
   "app.openWidgetGallery": "Widget ekle",
+
+  "searchEngine.default": "Varsayılan",
+  "searchEngine.google": "Google",
+  "searchEngine.yandex": "Yandex",
+  "searchEngine.bing": "Bing",
+  "searchEngine.duckduckgo": "DuckDuckGo",
+  "searchEngine.youtube": "YouTube",
+  "searchEngine.ecosia": "Ecosia",
+
+  "navSearch.placeholder": "Web'de ara…",
+  "navSearch.engineAria": "Arama motoru",
+  "widget.navSearch": "Arama Çubuğu",
 };
