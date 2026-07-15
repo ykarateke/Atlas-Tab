@@ -4,6 +4,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import type { Bookmark } from "@atlas-tab/core";
 import { BookmarkItem } from "../BookmarkItem/BookmarkItem";
 import { BookmarkForm, type BookmarkFormValues } from "../BookmarkForm/BookmarkForm";
+import { useTranslation } from "../../i18n/I18nContext";
 import styles from "./BookmarksBoardBody.module.css";
 
 export interface BookmarksBoardBodyProps {
@@ -31,6 +32,7 @@ export function BookmarksBoardBody({
   onOpenBackground,
   onOpenIncognito,
 }: BookmarksBoardBodyProps) {
+  const t = useTranslation();
   const [formMode, setFormMode] = useState<null | "add" | Bookmark>(null);
   // Expanded state is UI-only and resets on reload, not persisted
   // (FEATURE_SPECS.md § Bookmarks).
@@ -67,7 +69,9 @@ export function BookmarksBoardBody({
 
       {hiddenCount > 0 && (
         <button type="button" className={styles.showMore} onClick={() => setExpanded(true)}>
-          Show {hiddenCount} more
+          {hiddenCount === 1
+            ? t("bookmark.showMoreOne")
+            : t("bookmark.showMoreOther", { count: hiddenCount })}
         </button>
       )}
 
@@ -87,7 +91,7 @@ export function BookmarksBoardBody({
         />
       ) : (
         <button type="button" className={styles.addButton} onClick={() => setFormMode("add")}>
-          + Add bookmark
+          {t("bookmark.add")}
         </button>
       )}
     </div>

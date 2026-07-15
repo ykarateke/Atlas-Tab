@@ -1,5 +1,7 @@
 import { useState } from "react";
 import type { Bookmark, Board } from "@atlas-tab/core";
+import { useTranslation } from "../../i18n/I18nContext";
+import { CloseIcon } from "../../icons/Icons";
 import styles from "./TrashPanel.module.css";
 
 export interface TrashPanelProps {
@@ -21,17 +23,18 @@ export function TrashPanel({
   onPermanentlyDeleteBookmark,
   onEmptyTrash,
 }: TrashPanelProps) {
+  const t = useTranslation();
   const [confirmingEmpty, setConfirmingEmpty] = useState(false);
   const isEmpty = trashedBoards.length === 0 && trashedBookmarks.length === 0;
 
   return (
-    <section className={styles.panel} aria-label="Trash">
+    <section className={styles.panel} aria-label={t("trash.title")}>
       <header className={styles.header}>
-        <h2>Trash</h2>
+        <h2>{t("trash.title")}</h2>
         {!isEmpty &&
           (confirmingEmpty ? (
             <span className={styles.confirmRow}>
-              Empty trash?
+              {t("trash.emptyConfirm")}
               <button
                 type="button"
                 onClick={() => {
@@ -39,20 +42,20 @@ export function TrashPanel({
                   onEmptyTrash();
                 }}
               >
-                Confirm
+                {t("common.confirm")}
               </button>
               <button type="button" onClick={() => setConfirmingEmpty(false)}>
-                Cancel
+                {t("common.cancel")}
               </button>
             </span>
           ) : (
             <button type="button" onClick={() => setConfirmingEmpty(true)}>
-              Empty trash
+              {t("trash.empty")}
             </button>
           ))}
       </header>
 
-      {isEmpty && <p className={styles.empty}>Trash is empty.</p>}
+      {isEmpty && <p className={styles.empty}>{t("trash.isEmpty")}</p>}
 
       {trashedBoards.length > 0 && (
         <ul className={styles.list}>
@@ -61,17 +64,21 @@ export function TrashPanel({
             return (
               <li key={board.id} className={styles.row}>
                 <span className={styles.name}>
-                  {board.name} ({count} bookmark{count === 1 ? "" : "s"})
+                  {board.name} (
+                  {count === 1
+                    ? t("trash.bookmarkCountOne")
+                    : t("trash.bookmarkCountOther", { count })}
+                  )
                 </span>
                 <button type="button" onClick={() => onRestoreBoard(board.id)}>
-                  Restore
+                  {t("common.restore")}
                 </button>
                 <button
                   type="button"
-                  aria-label={`Permanently delete ${board.name}`}
+                  aria-label={t("trash.permanentlyDeleteAria", { name: board.name })}
                   onClick={() => onPermanentlyDeleteBoard(board.id)}
                 >
-                  ✕
+                  <CloseIcon width={12} height={12} />
                 </button>
               </li>
             );
@@ -85,11 +92,11 @@ export function TrashPanel({
             <li key={bookmark.id} className={styles.row}>
               <span className={styles.name}>{bookmark.title}</span>
               <button type="button" onClick={() => onRestoreBookmark(bookmark.id)}>
-                Restore
+                {t("common.restore")}
               </button>
               <button
                 type="button"
-                aria-label={`Permanently delete ${bookmark.title}`}
+                aria-label={t("trash.permanentlyDeleteAria", { name: bookmark.title })}
                 onClick={() => onPermanentlyDeleteBookmark(bookmark.id)}
               >
                 ✕

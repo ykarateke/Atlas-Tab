@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import * as core from "@atlas-tab/core";
-import type { AppState, NewBoard } from "@atlas-tab/core";
+import type { AppSettings, AppState, NewBoard, ThemeStyle } from "@atlas-tab/core";
 import { chromeStorageAdapter } from "./chromeStorageAdapter";
 
 const SAVE_DEBOUNCE_MS = 500;
@@ -45,6 +45,10 @@ interface AppStore {
   permanentlyDeleteBoard: (boardId: string) => void;
   permanentlyDeleteBookmark: (bookmarkId: string) => void;
   emptyTrash: () => void;
+
+  updateThemeStyle: (updates: Partial<ThemeStyle>) => void;
+  resetThemeStyle: () => void;
+  updateSettings: (updates: Partial<AppSettings>) => void;
 }
 
 export const useAppStore = create<AppStore>((set) => {
@@ -88,5 +92,9 @@ export const useAppStore = create<AppStore>((set) => {
     permanentlyDeleteBookmark: (bookmarkId) =>
       apply((s) => core.permanentlyDeleteBookmark(s, bookmarkId)),
     emptyTrash: () => apply((s) => core.emptyTrash(s)),
+
+    updateThemeStyle: (updates) => apply((s) => core.updateThemeStyle(s, updates)),
+    resetThemeStyle: () => apply((s) => core.resetThemeStyle(s)),
+    updateSettings: (updates) => apply((s) => core.updateSettings(s, updates)),
   };
 });

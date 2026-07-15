@@ -6,4 +6,7 @@ export * from "./components/BookmarksBoardBody/BookmarksBoardBody";
 export * from "./components/BookmarkItem/BookmarkItem";
 export * from "./components/BookmarkForm/BookmarkForm";
 export * from "./components/TrashPanel/TrashPanel";
+export * from "./components/StyleEditor/StyleEditor";
 export * from "./favicon";
+export * from "./i18n";
+export * from "./icons";

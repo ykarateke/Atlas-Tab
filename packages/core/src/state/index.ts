@@ -4,4 +4,6 @@ export * from "./pages";
 export * from "./boards";
 export * from "./bookmarks";
 export * from "./trash";
+export * from "./theme";
+export * from "./settings";
 export * from "./persistence";

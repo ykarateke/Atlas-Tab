@@ -1,14 +1,15 @@
 import { useState } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
-import type { BoardType, NewBoard } from "@atlas-tab/core";
+import type { BoardType, NewBoard, TranslationKey } from "@atlas-tab/core";
+import { useTranslation } from "../../i18n/I18nContext";
 import styles from "./BoardGrid.module.css";
 
-const BOARD_TYPE_LABELS: Record<BoardType, string> = {
-  bookmarks: "Bookmarks",
-  notes: "Notes",
-  calendar: "Calendar",
-  pomodoro: "Pomodoro",
-  search: "Search",
+const BOARD_TYPE_LABEL_KEYS: Record<BoardType, TranslationKey> = {
+  bookmarks: "board.type.bookmarks",
+  notes: "board.type.notes",
+  calendar: "board.type.calendar",
+  pomodoro: "board.type.pomodoro",
+  search: "board.type.search",
 };
 
 function buildDraft(
@@ -54,6 +55,7 @@ export interface NewBoardCellProps {
 // the store until the whole form (name input or type select) loses focus
 // with a non-blank name.
 export function NewBoardCell({ pageId, col, row, onCreate }: NewBoardCellProps) {
+  const t = useTranslation();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [type, setType] = useState<BoardType>("bookmarks");
@@ -83,7 +85,7 @@ export function NewBoardCell({ pageId, col, row, onCreate }: NewBoardCellProps) 
       <button
         type="button"
         className={styles.newBoardButton}
-        aria-label="Add board"
+        aria-label={t("board.addAria")}
         onClick={() => setOpen(true)}
       >
         +
@@ -94,19 +96,19 @@ export function NewBoardCell({ pageId, col, row, onCreate }: NewBoardCellProps) 
   return (
     <div className={styles.newBoardForm} onBlur={handleFormBlur}>
       <select
-        aria-label="Board type"
+        aria-label={t("board.typeAria")}
         value={type}
         onChange={(e) => setType(e.target.value as BoardType)}
       >
-        {Object.entries(BOARD_TYPE_LABELS).map(([value, label]) => (
+        {Object.entries(BOARD_TYPE_LABEL_KEYS).map(([value, labelKey]) => (
           <option key={value} value={value}>
-            {label}
+            {t(labelKey)}
           </option>
         ))}
       </select>
       <input
         autoFocus
-        placeholder="Board name"
+        placeholder={t("board.namePlaceholder")}
         value={name}
         onChange={(e) => setName(e.target.value)}
         onKeyDown={handleKeyDown}

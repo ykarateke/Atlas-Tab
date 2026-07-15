@@ -3,6 +3,8 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Bookmark } from "@atlas-tab/core";
 import { useFavicon } from "../../favicon/FaviconContext";
+import { useTranslation } from "../../i18n/I18nContext";
+import { GripIcon, MoreIcon } from "../../icons/Icons";
 import styles from "./BookmarkItem.module.css";
 
 export interface BookmarkItemProps {
@@ -22,6 +24,7 @@ export function BookmarkItem({
   onEdit,
   onDelete,
 }: BookmarkItemProps) {
+  const t = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const favicon = useFavicon(bookmark.url);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -40,11 +43,11 @@ export function BookmarkItem({
       <button
         type="button"
         className={styles.dragHandle}
-        aria-label={`Drag ${bookmark.title}`}
+        aria-label={t("bookmark.dragAria", { title: bookmark.title })}
         {...attributes}
         {...listeners}
       >
-        ⠿
+        <GripIcon width={13} height={13} />
       </button>
       {favicon ? (
         <img className={styles.favicon} src={favicon} alt="" width={16} height={16} />
@@ -62,11 +65,11 @@ export function BookmarkItem({
       <div className={styles.menuWrapper}>
         <button
           type="button"
-          aria-label={`${bookmark.title} menu`}
+          aria-label={t("bookmark.menuAria", { title: bookmark.title })}
           className={styles.menuButton}
           onClick={() => setMenuOpen((open) => !open)}
         >
-          ⋯
+          <MoreIcon width={14} height={14} />
         </button>
         {menuOpen && (
           <div className={styles.menu} role="menu">
@@ -78,7 +81,7 @@ export function BookmarkItem({
                 onOpenBackground(bookmark);
               }}
             >
-              Open
+              {t("bookmark.open")}
             </button>
             <button
               type="button"
@@ -88,7 +91,7 @@ export function BookmarkItem({
                 onOpenIncognito(bookmark);
               }}
             >
-              Open Incognito
+              {t("bookmark.openIncognito")}
             </button>
             <button
               type="button"
@@ -98,7 +101,7 @@ export function BookmarkItem({
                 onEdit(bookmark);
               }}
             >
-              Edit
+              {t("bookmark.edit")}
             </button>
             <button
               type="button"
@@ -108,7 +111,7 @@ export function BookmarkItem({
                 onDelete(bookmark.id);
               }}
             >
-              Delete
+              {t("bookmark.delete")}
             </button>
           </div>
         )}

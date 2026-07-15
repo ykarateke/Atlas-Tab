@@ -2,16 +2,23 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BoardGrid,
   BookmarksBoardBody,
+  CloseIcon,
   FaviconProvider,
+  I18nProvider,
   PageTabs,
   PlaceholderBoardBody,
+  SlidersIcon,
+  StyleEditor,
+  TrashIcon,
   TrashPanel,
   fetchAndEncode,
+  useTranslation,
 } from "@atlas-tab/ui";
-import { getFavicon } from "@atlas-tab/core";
+import { getFavicon, resolveLocale } from "@atlas-tab/core";
 import type { Bookmark, Board as BoardData } from "@atlas-tab/core";
 import { useAppStore } from "./store/useAppStore";
 import { chromeStorageAdapter } from "./store/chromeStorageAdapter";
+import { applyThemeStyle } from "./applyThemeStyle";
 import styles from "./App.module.css";
 
 function buildExtensionFaviconUrl(pageUrl: string): string {
@@ -30,10 +37,27 @@ function groupBookmarksByBoard(bookmarks: Bookmark[]): Map<string, Bookmark[]> {
 }
 
 export function App() {
+  const { hydrated, hydrate, state } = useAppStore();
+
+  useEffect(() => {
+    void hydrate();
+  }, [hydrate]);
+
+  if (!hydrated) return null;
+
+  const locale = resolveLocale(state.settings.uiLanguage, navigator.language);
+
+  return (
+    <I18nProvider locale={locale}>
+      <AppContent locale={locale} />
+    </I18nProvider>
+  );
+}
+
+function AppContent({ locale }: { locale: "en" | "tr" }) {
+  const t = useTranslation();
   const {
     state,
-    hydrated,
-    hydrate,
     setActivePage,
     addPage,
     renamePage,
@@ -52,21 +76,23 @@ export function App() {
     permanentlyDeleteBoard,
     permanentlyDeleteBookmark,
     emptyTrash,
+    updateThemeStyle,
+    resetThemeStyle,
+    updateSettings,
   } = useAppStore();
 
   const [trashOpen, setTrashOpen] = useState(false);
+  const [styleEditorOpen, setStyleEditorOpen] = useState(false);
 
   useEffect(() => {
-    void hydrate();
-  }, [hydrate]);
+    applyThemeStyle(state.themeStyle);
+  }, [state.themeStyle]);
 
   const resolveFavicon = useMemo(
     () => (bookmarkUrl: string) =>
       getFavicon(chromeStorageAdapter, bookmarkUrl, { fetchAndEncode, buildExtensionFaviconUrl }),
     [],
   );
-
-  if (!hydrated) return null;
 
   const activePageBoards = state.boards.filter((b) => b.pageId === state.activePageId);
   const bookmarksByBoardId = groupBookmarksByBoard(state.bookmarks);
@@ -122,32 +148,51 @@ export function App() {
           />
         </div>
 
-        <button
-          type="button"
-          className={styles.trashToggle}
-          aria-label="Open trash"
-          onClick={() => setTrashOpen(true)}
-        >
-          🗑{trashCount > 0 && <span className={styles.trashBadge}>{trashCount}</span>}
-        </button>
+        <div className={styles.fabStack}>
+          <button
+            type="button"
+            className={styles.fab}
+            aria-label={t("app.language")}
+            onClick={() => updateSettings({ uiLanguage: locale === "en" ? "tr" : "en" })}
+          >
+            {locale.toUpperCase()}
+          </button>
+          <button
+            type="button"
+            className={styles.fab}
+            aria-label={t("app.openStyleEditor")}
+            onClick={() => setStyleEditorOpen(true)}
+          >
+            <SlidersIcon width={18} height={18} />
+          </button>
+          <button
+            type="button"
+            className={styles.fab}
+            aria-label={t("app.openTrash")}
+            onClick={() => setTrashOpen(true)}
+          >
+            <TrashIcon width={18} height={18} />
+            {trashCount > 0 && <span className={styles.badge}>{trashCount}</span>}
+          </button>
+        </div>
 
         {trashOpen && (
           <div
-            className={styles.trashOverlay}
+            className={styles.modalOverlay}
             onClick={(e) => {
               if (e.target === e.currentTarget) setTrashOpen(false);
             }}
           >
-            <div className={styles.trashModal}>
-              <div className={styles.trashModalHeader}>
-                <span>Trash</span>
+            <div className={styles.modal}>
+              <div className={styles.modalHeader}>
+                <span>{t("trash.title")}</span>
                 <button
                   type="button"
-                  aria-label="Close trash"
-                  className={styles.trashCloseBtn}
+                  aria-label={t("app.closeTrash")}
+                  className={styles.modalCloseBtn}
                   onClick={() => setTrashOpen(false)}
                 >
-                  ×
+                  <CloseIcon width={14} height={14} />
                 </button>
               </div>
               <TrashPanel
@@ -158,6 +203,35 @@ export function App() {
                 onRestoreBookmark={restoreBookmark}
                 onPermanentlyDeleteBookmark={permanentlyDeleteBookmark}
                 onEmptyTrash={emptyTrash}
+              />
+            </div>
+          </div>
+        )}
+
+        {styleEditorOpen && (
+          <div
+            className={styles.modalOverlay}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setStyleEditorOpen(false);
+            }}
+          >
+            <div className={styles.modal}>
+              <div className={styles.modalHeader}>
+                <span>{t("style.title")}</span>
+                <button
+                  type="button"
+                  aria-label={t("style.close")}
+                  className={styles.modalCloseBtn}
+                  onClick={() => setStyleEditorOpen(false)}
+                >
+                  <CloseIcon width={14} height={14} />
+                </button>
+              </div>
+              <StyleEditor
+                themeStyle={state.themeStyle}
+                onChange={updateThemeStyle}
+                onReset={resetThemeStyle}
+                onClose={() => setStyleEditorOpen(false)}
               />
             </div>
           </div>

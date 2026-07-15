@@ -3,6 +3,8 @@ import type { KeyboardEvent, ReactNode } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Board as BoardData } from "@atlas-tab/core";
+import { useTranslation } from "../../i18n/I18nContext";
+import { GripIcon, MoreIcon } from "../../icons/Icons";
 import styles from "./Board.module.css";
 
 export interface BoardProps {
@@ -13,6 +15,7 @@ export interface BoardProps {
 }
 
 export function Board({ board, onRename, onDelete, children }: BoardProps) {
+  const t = useTranslation();
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState(board.name);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -52,11 +55,11 @@ export function Board({ board, onRename, onDelete, children }: BoardProps) {
         <button
           type="button"
           className={styles.dragHandle}
-          aria-label={`Drag ${board.name}`}
+          aria-label={t("board.dragAria", { name: board.name })}
           {...attributes}
           {...listeners}
         >
-          ⠿
+          <GripIcon width={14} height={14} />
         </button>
         {editing ? (
           <input
@@ -75,11 +78,11 @@ export function Board({ board, onRename, onDelete, children }: BoardProps) {
         <div className={styles.menuWrapper}>
           <button
             type="button"
-            aria-label={`${board.name} menu`}
+            aria-label={t("board.menuAria", { name: board.name })}
             className={styles.menuButton}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            ⋯
+            <MoreIcon width={16} height={16} />
           </button>
           {menuOpen && (
             <div className={styles.menu} role="menu">
@@ -91,7 +94,7 @@ export function Board({ board, onRename, onDelete, children }: BoardProps) {
                   setEditing(true);
                 }}
               >
-                Rename
+                {t("board.rename")}
               </button>
               <button
                 type="button"
@@ -101,7 +104,7 @@ export function Board({ board, onRename, onDelete, children }: BoardProps) {
                   onDelete();
                 }}
               >
-                Delete
+                {t("board.delete")}
               </button>
             </div>
           )}

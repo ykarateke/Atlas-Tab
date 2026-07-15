@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { useTranslation } from "../../i18n/I18nContext";
 import styles from "./BookmarkForm.module.css";
 
 export interface BookmarkFormValues {
@@ -26,6 +27,7 @@ function deriveTitleFromUrl(url: string): string {
 // auto-derived from the hostname once (editable, and never overwritten once
 // the user has touched the title field themselves).
 export function BookmarkForm({ initial, onSave, onCancel }: BookmarkFormProps) {
+  const t = useTranslation();
   const [url, setUrl] = useState(initial?.url ?? "");
   const [title, setTitle] = useState(initial?.title ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
@@ -49,7 +51,7 @@ export function BookmarkForm({ initial, onSave, onCancel }: BookmarkFormProps) {
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
       <label className={styles.field}>
-        URL
+        {t("bookmark.url")}
         <input
           type="url"
           required
@@ -60,7 +62,7 @@ export function BookmarkForm({ initial, onSave, onCancel }: BookmarkFormProps) {
         />
       </label>
       <label className={styles.field}>
-        Title
+        {t("bookmark.title")}
         <input
           type="text"
           required
@@ -72,14 +74,14 @@ export function BookmarkForm({ initial, onSave, onCancel }: BookmarkFormProps) {
         />
       </label>
       <label className={styles.field}>
-        Description
+        {t("bookmark.description")}
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
       </label>
       <div className={styles.actions}>
         <button type="button" onClick={onCancel}>
-          Cancel
+          {t("common.cancel")}
         </button>
-        <button type="submit">Save</button>
+        <button type="submit">{t("common.save")}</button>
       </div>
     </form>
   );

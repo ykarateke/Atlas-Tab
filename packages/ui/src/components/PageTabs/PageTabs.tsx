@@ -16,6 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Page } from "@atlas-tab/core";
+import { useTranslation } from "../../i18n/I18nContext";
 import styles from "./PageTabs.module.css";
 
 export interface PageTabsProps {
@@ -43,6 +44,7 @@ function PageTab({
   onRename: (name: string) => void;
   onDelete: () => void;
 }) {
+  const t = useTranslation();
   const [editing, setEditing] = useState(false);
   const [draftName, setDraftName] = useState(page.name);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -99,7 +101,7 @@ function PageTab({
       {canDelete && (
         <button
           type="button"
-          aria-label={`Delete ${page.name}`}
+          aria-label={t("page.deleteAria", { name: page.name })}
           className={styles.deleteButton}
           onClick={onDelete}
         >
@@ -119,6 +121,7 @@ export function PageTabs({
   onDeletePage,
   onReorderPages,
 }: PageTabsProps) {
+  const t = useTranslation();
   const [addingPage, setAddingPage] = useState(false);
   const [newPageName, setNewPageName] = useState("");
   const sortedPages = [...pages].sort((a, b) => a.order - b.order);
@@ -143,7 +146,7 @@ export function PageTabs({
   }
 
   return (
-    <nav className={styles.tabRow} aria-label="Pages">
+    <nav className={styles.tabRow} aria-label={t("page.navAria")}>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
           items={sortedPages.map((p) => p.id)}
@@ -181,7 +184,7 @@ export function PageTabs({
       ) : (
         <button
           type="button"
-          aria-label="Add page"
+          aria-label={t("page.addAria")}
           className={styles.addButton}
           onClick={() => setAddingPage(true)}
         >

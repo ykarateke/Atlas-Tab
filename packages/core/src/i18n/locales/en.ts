@@ -1,0 +1,66 @@
+// Canonical dictionary — every other locale must cover this same key set.
+// Missing keys in other locales fall back to this one silently
+// (FEATURE_SPECS.md § i18n / Localization).
+export const en = {
+  "common.cancel": "Cancel",
+  "common.save": "Save",
+  "common.confirm": "Confirm",
+  "common.restore": "Restore",
+
+  "page.navAria": "Pages",
+  "page.addAria": "Add page",
+  "page.deleteAria": "Delete {name}",
+
+  "board.rename": "Rename",
+  "board.delete": "Delete",
+  "board.menuAria": "{name} menu",
+  "board.dragAria": "Drag {name}",
+  "board.addAria": "Add board",
+  "board.namePlaceholder": "Board name",
+  "board.typeAria": "Board type",
+  "board.type.bookmarks": "Bookmarks",
+  "board.type.notes": "Notes",
+  "board.type.calendar": "Calendar",
+  "board.type.pomodoro": "Pomodoro",
+  "board.type.search": "Search",
+
+  "bookmark.open": "Open",
+  "bookmark.openIncognito": "Open Incognito",
+  "bookmark.edit": "Edit",
+  "bookmark.delete": "Delete",
+  "bookmark.dragAria": "Drag {title}",
+  "bookmark.menuAria": "{title} menu",
+  "bookmark.showMoreOne": "Show 1 more",
+  "bookmark.showMoreOther": "Show {count} more",
+  "bookmark.add": "+ Add bookmark",
+  "bookmark.url": "URL",
+  "bookmark.title": "Title",
+  "bookmark.description": "Description",
+
+  "placeholder.comingSoon": "{type} — coming soon",
+
+  "trash.title": "Trash",
+  "trash.empty": "Empty trash",
+  "trash.emptyConfirm": "Empty trash?",
+  "trash.isEmpty": "Trash is empty.",
+  "trash.bookmarkCountOne": "1 bookmark",
+  "trash.bookmarkCountOther": "{count} bookmarks",
+  "trash.permanentlyDeleteAria": "Permanently delete {name}",
+
+  "app.openTrash": "Open trash",
+  "app.closeTrash": "Close trash",
+  "app.openStyleEditor": "Customize appearance",
+  "app.language": "Language",
+
+  "style.title": "Adjust Style",
+  "style.accentColor": "Accent Color",
+  "style.boardColor": "Board Color",
+  "style.boardOpacity": "Board Opacity",
+  "style.boardBlur": "Board Blur",
+  "style.textSize": "Text Size",
+  "style.textWeight": "Text Weight",
+  "style.normal": "Normal",
+  "style.bold": "Bold",
+  "style.reset": "Reset",
+  "style.close": "Close",
+};
