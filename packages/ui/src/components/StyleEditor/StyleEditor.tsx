@@ -1,5 +1,6 @@
 import type { AppSettings, ThemeStyle } from "@atlas-tab/core";
 import { useTranslation } from "../../i18n/I18nContext";
+import { GRID_GAP_PX, MIN_BOARD_WIDTH_PX, SIDE_RESERVE_PX } from "../BoardGrid/layout";
 import styles from "./StyleEditor.module.css";
 
 export interface StyleEditorProps {
@@ -14,19 +15,17 @@ export interface StyleEditorProps {
 
 const TEXT_SCALES: ThemeStyle["textScale"][] = [0.9, 1, 1.15];
 const COLUMN_OPTIONS = [4, 5, 6, 7, 8, 9] as const;
-const MIN_BOARD_WIDTH = 160;
 const MAX_BOARD_WIDTH_AUTO = 400;
-const GRID_GAP_PX = 16;
-const APP_HORIZONTAL_PADDING_PX = 48;
 
 // FEATURE_SPECS.md § Settings: board width's max is "dynamically capped by
 // what the current column count can actually fit" — approximated from the
-// viewport width since this modal isn't inside the grid's own measured
-// container.
+// viewport width (same MIN_BOARD_WIDTH_PX/SIDE_RESERVE_PX BoardGrid's own
+// layout math uses, see ../BoardGrid/layout) since this modal isn't inside
+// the grid's own measured container.
 function maxBoardWidthFor(columns: AppSettings["maxBoardColumns"]): number {
   if (columns === null) return MAX_BOARD_WIDTH_AUTO;
-  const available = window.innerWidth - APP_HORIZONTAL_PADDING_PX - GRID_GAP_PX * (columns - 1);
-  return Math.max(MIN_BOARD_WIDTH, Math.floor(available / columns));
+  const available = window.innerWidth - 2 * SIDE_RESERVE_PX - GRID_GAP_PX * (columns - 1);
+  return Math.max(MIN_BOARD_WIDTH_PX, Math.floor(available / columns));
 }
 
 // Changes apply live as controls move (matching how the rest of Phase 1
@@ -167,7 +166,7 @@ export function StyleEditor({
         </span>
         <input
           type="range"
-          min={MIN_BOARD_WIDTH}
+          min={MIN_BOARD_WIDTH_PX}
           max={widthCap}
           step={10}
           value={clampedWidth}

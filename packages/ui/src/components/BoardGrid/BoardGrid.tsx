@@ -13,14 +13,14 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import type { Board as BoardData, NewBoard } from "@atlas-tab/core";
 import { Board } from "../Board/Board";
 import { NewBoardCell } from "./NewBoardCell";
+import { clampColumn, computeLayoutParams, GRID_GAP_PX, MIN_BOARD_WIDTH_PX } from "./layout";
 import styles from "./BoardGrid.module.css";
 
-// Integer CSS Grid tracks (fixed `boardWidthPx` columns, integer `gap`) give
+// Integer CSS Grid tracks (fixed board-width columns, integer gap) give
 // pixel-exact column boundaries by construction — this is the ARCHITECTURE.md
 // § 5 "integer pixel positioning" requirement, satisfied without manual
-// position rounding.
-const GAP_PX = 16;
-const MIN_COLUMNS = 1;
+// position rounding. The actual column count/width come from ./layout
+// (ported from Markmez v1's getLayoutParams()).
 
 export interface BoardGridProps {
   pageId: string;
@@ -60,25 +60,30 @@ export function BoardGrid({
   onMoveBookmark,
 }: BoardGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [autoColumns, setAutoColumns] = useState(MIN_COLUMNS);
+  const [layout, setLayout] = useState(() => ({
+    numCols: 1,
+    boardWidthPx: Math.max(MIN_BOARD_WIDTH_PX, boardWidthPx),
+  }));
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
 
   useEffect(() => {
-    if (maxColumns !== null) return;
     const el = containerRef.current;
     if (!el) return;
 
     const observer = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
-      setAutoColumns(Math.max(MIN_COLUMNS, Math.floor((width + GAP_PX) / (boardWidthPx + GAP_PX))));
+      setLayout(computeLayoutParams(width, boardWidthPx, maxColumns));
     });
     observer.observe(el);
     return () => observer.disconnect();
   }, [maxColumns, boardWidthPx]);
 
-  const columnCount = maxColumns ?? autoColumns;
+  const { numCols: columnCount, boardWidthPx: renderedBoardWidthPx } = layout;
   const columns = Array.from({ length: columnCount }, (_, col) =>
-    boards.filter((b) => b.col === col).sort((a, b) => a.row - b.row),
+    boards
+      .filter((b) => clampColumn(b.col, columnCount) === col)
+      .sort((a, b) => a.row - b.row)
+      .map((b) => (b.col === col ? b : { ...b, col })),
   );
 
   function handleDragEnd(event: DragEndEvent) {
@@ -107,7 +112,10 @@ export function BoardGrid({
     <div
       ref={containerRef}
       className={styles.grid}
-      style={{ gridTemplateColumns: `repeat(${columnCount}, ${boardWidthPx}px)`, gap: GAP_PX }}
+      style={{
+        gridTemplateColumns: `repeat(${columnCount}, ${renderedBoardWidthPx}px)`,
+        gap: GRID_GAP_PX,
+      }}
     >
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         {columns.map((columnBoards, col) => (
