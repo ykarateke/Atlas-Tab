@@ -38,6 +38,9 @@ export const tr: Record<keyof typeof en, string> = {
   "bookmark.url": "URL",
   "bookmark.title": "Başlık",
   "bookmark.description": "Açıklama",
+  "bookmark.searchPlaceholder": "Yer imlerinde ara…",
+  "bookmark.searchHint": "Aramak için yazmaya başla…",
+  "bookmark.noResults": "Yer imi bulunamadı",
 
   "placeholder.comingSoon": "{type} — yakında",
 

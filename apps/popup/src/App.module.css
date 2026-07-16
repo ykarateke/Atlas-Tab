@@ -1,0 +1,86 @@
+.wrap {
+  width: 320px;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  color: #e0e0e0;
+  background: #1a1a2e;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #ffffff;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.5;
+}
+
+.input,
+.select {
+  padding: 6px 8px;
+  border: 1px solid rgba(255 255 255 / 0.12);
+  border-radius: 6px;
+  background: rgba(255 255 255 / 0.06);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  outline: none;
+}
+
+.input:focus,
+.select:focus {
+  border-color: rgba(255 255 255 / 0.3);
+}
+
+.saveBtn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #4a6cf7;
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.saveBtn:hover {
+  background: #5a7cf7;
+}
+
+.saveBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.saved {
+  text-align: center;
+  padding: 24px 0;
+  font-size: 15px;
+  color: #4caf50;
+}
+
+.error {
+  color: #f44336;
+  font-size: 12px;
+  margin: 0;
+}

@@ -1,0 +1,89 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255 255 255 / 0.08);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.icon {
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.input::placeholder {
+  opacity: 0.4;
+}
+
+.engineBtn {
+  border: none;
+  background: rgba(255 255 255 / 0.1);
+  color: inherit;
+  font-size: 11px;
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.engineBtn:hover {
+  background: rgba(255 255 255 / 0.2);
+}
+
+.pickerWrap {
+  position: relative;
+}
+
+.engineMenu {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 4px;
+  background: #1e1e1e;
+  border: 1px solid rgba(255 255 255 / 0.1);
+  border-radius: 6px;
+  padding: 4px 0;
+  list-style: none;
+  z-index: 10;
+  min-width: 130px;
+}
+
+.engineMenu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.engineMenu button:hover {
+  background: rgba(255 255 255 / 0.1);
+}
+
+.engineActive {
+  font-weight: 600;
+}

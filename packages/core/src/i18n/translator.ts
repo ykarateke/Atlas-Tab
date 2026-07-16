@@ -1,10 +1,11 @@
 import { en } from "./locales/en";
+import { ru } from "./locales/ru";
 import { tr } from "./locales/tr";
 
-export type Locale = "en" | "tr";
+export type Locale = "en" | "ru" | "tr";
 export type TranslationKey = keyof typeof en;
 
-const dictionaries: Record<Locale, Record<TranslationKey, string>> = { en, tr };
+const dictionaries: Record<Locale, Record<TranslationKey, string>> = { en, ru, tr };
 
 export type Translate = (key: TranslationKey, vars?: Record<string, string | number>) => string;
 
@@ -30,7 +31,9 @@ export function resolveLocale(
   uiLanguage: "auto" | "en" | "ru" | "tr",
   browserLanguage: string,
 ): Locale {
-  if (uiLanguage === "en" || uiLanguage === "tr") return uiLanguage;
-  if (browserLanguage.toLowerCase().startsWith("tr")) return "tr";
+  if (uiLanguage === "en" || uiLanguage === "ru" || uiLanguage === "tr") return uiLanguage;
+  const lang = browserLanguage.toLowerCase();
+  if (lang.startsWith("tr")) return "tr";
+  if (lang.startsWith("ru")) return "ru";
   return "en";
 }

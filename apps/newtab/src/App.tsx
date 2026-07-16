@@ -7,6 +7,7 @@ import {
   CloseIcon,
   FaviconProvider,
   FocusStatsWidget,
+  GlobalSearchOverlay,
   I18nProvider,
   NavSearchBar,
   NotesBoardBody,
@@ -14,6 +15,7 @@ import {
   PlaceholderBoardBody,
   PlusIcon,
   PomodoroBoardBody,
+  SearchBoardBody,
   SlidersIcon,
   StyleEditor,
   TrashIcon,
@@ -149,6 +151,7 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
     renameBoard,
     deleteBoard,
     moveBoard,
+    changeSearchBoardEngine,
     addBookmark,
     editBookmark,
     deleteBookmark,
@@ -176,14 +179,27 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
   const [styleEditorOpen, setStyleEditorOpen] = useState(false);
   const [stylePreviewing, setStylePreviewing] = useState(false);
   const [widgetGalleryOpen, setWidgetGalleryOpen] = useState(false);
+  const [searchOverlayOpen, setSearchOverlayOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
+
+  // Global Ctrl/Cmd+K shortcut for the bookmark search overlay
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOverlayOpen((o) => !o);
+      }
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
   useEffect(() => {
     applyThemeStyle(state.themeStyle);
   }, [state.themeStyle]);
 
   useEffect(() => {
-    applyWallpaper(state.wallpaper.currentId);
+    void applyWallpaper(state.wallpaper.currentId);
   }, [state.wallpaper.currentId]);
 
   // Single shared clock, updated on the minute boundary, fed to both
@@ -251,6 +267,14 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
           onPause={() => pausePomodoroTimer(board.id)}
           onReset={() => resetPomodoroTimer(board.id)}
           onTick={() => tickPomodoroTimer(board.id)}
+        />
+      );
+    }
+    if (board.type === "search") {
+      return (
+        <SearchBoardBody
+          searchEngineId={board.searchEngineId}
+          onSearchEngineChange={(engineId) => changeSearchBoardEngine(board.id, engineId)}
         />
       );
     }
@@ -455,6 +479,12 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
             </div>
           </div>
         )}
+        <GlobalSearchOverlay
+          open={searchOverlayOpen}
+          bookmarks={state.bookmarks}
+          boards={state.boards}
+          onClose={() => setSearchOverlayOpen(false)}
+        />
       </div>
     </FaviconProvider>
   );

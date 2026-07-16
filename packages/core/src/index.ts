@@ -4,3 +4,7 @@ export * from "./favicon";
 export * from "./i18n";
 export * from "./weather";
 export * from "./search-engines";
+export * from "./migration";
+export * from "./wallpaper-storage";
+export * from "./sync";
+export * from "./import-export";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultAppState } from "./default-state";
-import { addBoard, deleteBoard, moveBoard, renameBoard, updateNotesBoard } from "./boards";
+import { addBoard, changeSearchBoardEngine, deleteBoard, moveBoard, renameBoard, updateNotesBoard } from "./boards";
 import { addBookmark } from "./bookmarks";
 import type { AppState } from "../schema/app-state";
 
@@ -196,6 +196,35 @@ describe("updateNotesBoard", () => {
     const state = withBoard(createDefaultAppState(), 0, 0);
     const boardId = state.boards[0]!.id;
     const next = updateNotesBoard(state, boardId, { content: "hello" });
+    expect(next).toEqual(state);
+  });
+});
+
+describe("changeSearchBoardEngine", () => {
+  it("updates the search engine on a search board", () => {
+    const state = createDefaultAppState();
+    const withSearch = addBoard(state, {
+      pageId: state.activePageId,
+      name: "Search",
+      col: 0,
+      row: 0,
+      type: "search",
+      searchEngineId: "google",
+    });
+    const boardId = withSearch.boards[0]!.id;
+
+    const next = changeSearchBoardEngine(withSearch, boardId, "duckduckgo");
+    const board = next.boards.find((b) => b.id === boardId)!;
+    expect(board.type).toBe("search");
+    if (board.type === "search") {
+      expect(board.searchEngineId).toBe("duckduckgo");
+    }
+  });
+
+  it("is a no-op for a non-search board", () => {
+    const state = withBoard(createDefaultAppState(), 0, 0);
+    const boardId = state.boards[0]!.id;
+    const next = changeSearchBoardEngine(state, boardId, "duckduckgo");
     expect(next).toEqual(state);
   });
 });

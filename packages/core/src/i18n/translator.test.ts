@@ -33,11 +33,19 @@ describe("resolveLocale", () => {
     expect(resolveLocale("auto", "tr-TR")).toBe("tr");
   });
 
-  it("falls back to English for auto with a non-Turkish browser language", () => {
+  it("resolves the ru locale explicitly", () => {
+    expect(resolveLocale("ru", "en-US")).toBe("ru");
+  });
+
+  it("detects Russian from the browser language when uiLanguage is auto", () => {
+    expect(resolveLocale("auto", "ru-RU")).toBe("ru");
+  });
+
+  it("falls back to English for auto with a non-Turkish/Russian browser language", () => {
     expect(resolveLocale("auto", "de-DE")).toBe("en");
   });
 
-  it("falls back to English for an unsupported explicit uiLanguage (ru)", () => {
-    expect(resolveLocale("ru", "ru-RU")).toBe("en");
+  it("falls back to English for an unsupported explicit uiLanguage (fr)", () => {
+    expect(resolveLocale("fr", "fr-FR")).toBe("en");
   });
 });

@@ -37,6 +37,9 @@ export const en = {
   "bookmark.url": "URL",
   "bookmark.title": "Title",
   "bookmark.description": "Description",
+  "bookmark.searchPlaceholder": "Search bookmarks…",
+  "bookmark.searchHint": "Type to search bookmarks…",
+  "bookmark.noResults": "No bookmarks found",
 
   "placeholder.comingSoon": "{type} — coming soon",
 

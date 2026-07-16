@@ -1,5 +1,5 @@
 import type { AppState } from "../schema/app-state";
-import type { Board, NotesBoard } from "../schema/board";
+import type { Board, NotesBoard, SearchBoard } from "../schema/board";
 import { createId } from "./id";
 
 // Plain `Omit<Board, "id">` doesn't distribute over Board's discriminated
@@ -121,5 +121,18 @@ export function deleteBoard(state: AppState, boardId: string): AppState {
         ...boardBookmarks.map((bk) => ({ ...bk, deletedAt })),
       ],
     },
+  };
+}
+
+export function changeSearchBoardEngine(
+  state: AppState,
+  boardId: string,
+  searchEngineId: SearchBoard["searchEngineId"],
+): AppState {
+  return {
+    ...state,
+    boards: state.boards.map((b) =>
+      b.id === boardId && b.type === "search" ? { ...b, searchEngineId } : b,
+    ),
   };
 }

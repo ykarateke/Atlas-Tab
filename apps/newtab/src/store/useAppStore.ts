@@ -42,6 +42,7 @@ interface AppStore {
   renameBoard: (boardId: string, name: string) => void;
   deleteBoard: (boardId: string) => void;
   moveBoard: (boardId: string, targetCol: number, targetIndex: number) => void;
+  changeSearchBoardEngine: (boardId: string, searchEngineId: string) => void;
 
   addBookmark: (boardId: string, values: BookmarkValues) => void;
   editBookmark: (bookmarkId: string, values: BookmarkValues) => void;
@@ -100,6 +101,8 @@ export const useAppStore = create<AppStore>((set, get) => {
     deleteBoard: (boardId) => apply((s) => core.deleteBoard(s, boardId)),
     moveBoard: (boardId, targetCol, targetIndex) =>
       apply((s) => core.moveBoard(s, boardId, targetCol, targetIndex)),
+    changeSearchBoardEngine: (boardId, searchEngineId) =>
+      apply((s) => core.changeSearchBoardEngine(s, boardId, searchEngineId)),
 
     addBookmark: (boardId, values) => apply((s) => core.addBookmark(s, { boardId, ...values })),
     editBookmark: (bookmarkId, values) => apply((s) => core.editBookmark(s, bookmarkId, values)),
