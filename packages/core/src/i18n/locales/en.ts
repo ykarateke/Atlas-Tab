@@ -72,6 +72,12 @@ export const en = {
   "style.columnsAuto": "Auto",
   "style.boardWidth": "Board Width",
   "style.wallpaperTitle": "Wallpaper",
+  "style.uploadWallpaper": "Upload image or video…",
+  "style.uploaded": "Uploaded",
+  "style.themeTitle": "Theme",
+  "style.themeMode": "Mode",
+  "style.light": "Light",
+  "style.dark": "Dark",
 
   "notes.placeholder": "Write something…",
 

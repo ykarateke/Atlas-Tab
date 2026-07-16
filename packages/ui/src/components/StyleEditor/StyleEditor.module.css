@@ -65,6 +65,12 @@
   border-top: none;
 }
 
+.sectionSubtitle {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgb(255 255 255 / 45%);
+}
+
 .wallpaperGrid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -97,6 +103,61 @@
 
 .wallpaperThumbActive {
   border-color: var(--accent-color, #fff);
+}
+
+.historyThumbWrap {
+  position: relative;
+}
+
+.deleteHistoryBtn {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0 0 0 / 0.7);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.historyThumbWrap:hover .deleteHistoryBtn {
+  opacity: 1;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadBtn {
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 8px;
+  border: 1px dashed rgb(255 255 255 / 20%);
+  background: rgb(255 255 255 / 4%);
+  color: rgb(255 255 255 / 50%);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.uploadBtn:hover {
+  background: rgb(255 255 255 / 9%);
+  color: #fff;
+  border-color: rgb(255 255 255 / 35%);
 }
 
 .sliderField {

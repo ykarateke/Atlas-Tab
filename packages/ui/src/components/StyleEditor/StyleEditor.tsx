@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import type { AppSettings, ThemeStyle } from "@atlas-tab/core";
+import { useEffect, useRef, useState } from "react";
+import type { AppSettings, ThemeStyle, WallpaperHistoryEntry } from "@atlas-tab/core";
 import { useTranslation } from "../../i18n/I18nContext";
 import { GRID_GAP_PX, MIN_BOARD_WIDTH_PX, SIDE_RESERVE_PX } from "../BoardGrid/layout";
 import styles from "./StyleEditor.module.css";
@@ -14,6 +14,12 @@ export interface StyleEditorProps {
   onLayoutChange: (updates: Pick<AppSettings, "maxBoardColumns" | "boardWidthPx">) => void;
   wallpaperCurrentId: string | null;
   onWallpaperChange: (id: string) => void;
+  /** History of uploaded wallpapers (from AppState.wallpaper.history). Bundled presets are hardcoded. */
+  wallpaperHistory?: WallpaperHistoryEntry[];
+  /** Called when user picks a file to upload. Parent handles IndexedDB + auto-analysis. */
+  onUploadWallpaper?: (file: File) => void;
+  /** Called when user deletes a history entry. */
+  onDeleteWallpaper?: (id: string) => void;
   // While the opacity/blur sliders are being dragged, the parent fades the
   // opaque modal chrome down to near-invisible so the boards/wallpaper
   // underneath are visible as a live preview of the change.
@@ -23,27 +29,18 @@ export interface StyleEditorProps {
 const TEXT_SCALES: ThemeStyle["textScale"][] = [0.9, 1, 1.15];
 const COLUMN_OPTIONS = [4, 5, 6, 7, 8, 9] as const;
 const MAX_BOARD_WIDTH_AUTO = 400;
-// public/wallpapers/01.jpg .. 25.jpg — bundled presets (see
-// public/wallpapers/ATTRIBUTIONS.md). Upload/history is a later phase.
+// public/wallpapers/01.jpg .. 25.jpg — bundled presets
 const BUNDLED_WALLPAPERS = Array.from(
   { length: 25 },
   (_, i) => `${String(i + 1).padStart(2, "0")}.jpg`,
 );
 
-// FEATURE_SPECS.md § Settings: board width's max is "dynamically capped by
-// what the current column count can actually fit" — approximated from the
-// viewport width (same MIN_BOARD_WIDTH_PX/SIDE_RESERVE_PX BoardGrid's own
-// layout math uses, see ../BoardGrid/layout) since this modal isn't inside
-// the grid's own measured container.
 function maxBoardWidthFor(columns: AppSettings["maxBoardColumns"]): number {
   if (columns === null) return MAX_BOARD_WIDTH_AUTO;
   const available = window.innerWidth - 2 * SIDE_RESERVE_PX - GRID_GAP_PX * (columns - 1);
   return Math.max(MIN_BOARD_WIDTH_PX, Math.floor(available / columns));
 }
 
-// Changes apply live as controls move (matching how the rest of Phase 1
-// mutates state directly, e.g. Trash) rather than v1's staged
-// cancel/save flow — Reset/Close are the only two actions needed here.
 export function StyleEditor({
   themeStyle,
   onChange,
@@ -54,12 +51,16 @@ export function StyleEditor({
   onLayoutChange,
   wallpaperCurrentId,
   onWallpaperChange,
+  wallpaperHistory,
+  onUploadWallpaper,
+  onDeleteWallpaper,
   onPreviewChange,
 }: StyleEditorProps) {
   const t = useTranslation();
   const widthCap = maxBoardWidthFor(maxColumns);
   const clampedWidth = Math.min(boardWidthPx, widthCap);
   const [previewing, setPreviewing] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!previewing) return;
@@ -78,11 +79,29 @@ export function StyleEditor({
     onPreviewChange?.(previewing);
   }, [previewing, onPreviewChange]);
 
+  function handleFilePick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !onUploadWallpaper) return;
+    onUploadWallpaper(file);
+    // Reset so the same file can be re-picked
+    e.target.value = "";
+  }
+
+  // Determine thumbnail URL for a wallpaper: bundled or history entry
+  function wallpaperThumbUrl(id: string): string {
+    if (/^\d/.test(id)) return `/wallpapers/${id}`;
+    // Uploaded wallpapers have their thumbnail URL in the history entry
+    const entry = wallpaperHistory?.find((h) => h.id === id);
+    return entry?.thumbnailDataUrl ?? "";
+  }
+
   return (
     <div className={styles.body}>
+      {/* ── Wallpaper section ── */}
       <div className={styles.sectionTitle} data-first>
         {t("style.wallpaperTitle")}
       </div>
+
       <div className={styles.wallpaperGrid}>
         {BUNDLED_WALLPAPERS.map((file) => (
           <button
@@ -91,9 +110,62 @@ export function StyleEditor({
             className={`${styles.wallpaperThumb} ${file === wallpaperCurrentId ? styles.wallpaperThumbActive : ""}`}
             style={{ backgroundImage: `url("/wallpapers/${file}")` }}
             onClick={() => onWallpaperChange(file)}
+            aria-label={file}
           />
         ))}
       </div>
+
+      {/* Uploaded wallpapers history */}
+      {wallpaperHistory && wallpaperHistory.length > 0 && (
+        <>
+          <div className={styles.sectionSubtitle}>{t("style.uploaded")}</div>
+          <div className={styles.wallpaperGrid}>
+            {wallpaperHistory.map((entry) => (
+              <div key={entry.id} className={styles.historyThumbWrap}>
+                <button
+                  type="button"
+                  className={`${styles.wallpaperThumb} ${entry.id === wallpaperCurrentId ? styles.wallpaperThumbActive : ""}`}
+                  style={{ backgroundImage: `url("${entry.thumbnailDataUrl}")` }}
+                  onClick={() => onWallpaperChange(entry.id)}
+                  aria-label={entry.name}
+                />
+                {onDeleteWallpaper && (
+                  <button
+                    type="button"
+                    className={styles.deleteHistoryBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteWallpaper(entry.id);
+                    }}
+                    aria-label={t("common.delete")}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Upload button */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        className={styles.fileInput}
+        onChange={handleFilePick}
+      />
+      <button
+        type="button"
+        className={styles.uploadBtn}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        {t("style.uploadWallpaper")}
+      </button>
+
+      {/* ── Theme section ── */}
+      <div className={styles.sectionTitle}>{t("style.themeTitle")}</div>
 
       <div className={styles.colorRow}>
         <label className={styles.field}>
@@ -118,6 +190,27 @@ export function StyleEditor({
             />
           </span>
         </label>
+      </div>
+
+      {/* Dark/Light toggle */}
+      <div className={styles.sliderField}>
+        <span className={styles.label}>{t("style.themeMode")}</span>
+        <div className={styles.seg}>
+          <button
+            type="button"
+            className={!themeStyle.isDark ? styles.segActive : ""}
+            onClick={() => onChange({ isDark: false })}
+          >
+            {t("style.light")}
+          </button>
+          <button
+            type="button"
+            className={themeStyle.isDark ? styles.segActive : ""}
+            onClick={() => onChange({ isDark: true })}
+          >
+            {t("style.dark")}
+          </button>
+        </div>
       </div>
 
       <label className={styles.sliderField}>

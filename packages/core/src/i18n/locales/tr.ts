@@ -73,6 +73,12 @@ export const tr: Record<keyof typeof en, string> = {
   "style.columnsAuto": "Otomatik",
   "style.boardWidth": "Board Genişliği",
   "style.wallpaperTitle": "Duvar Kağıdı",
+  "style.uploadWallpaper": "Resim veya video yükle…",
+  "style.uploaded": "Yüklenenler",
+  "style.themeTitle": "Tema",
+  "style.themeMode": "Mod",
+  "style.light": "Aydınlık",
+  "style.dark": "Karanlık",
 
   "notes.placeholder": "Bir şeyler yaz…",
 

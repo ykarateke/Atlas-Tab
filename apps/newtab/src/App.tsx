@@ -31,8 +31,13 @@ import {
   getPomodoroTimer,
   isWeatherCacheStale,
   resolveLocale,
+  analyzeWallpaperStyle,
+  analyzeVideoWallpaperStyle,
+  uploadWallpaper,
+  deleteWallpaperFromHistory,
+  createId,
 } from "@atlas-tab/core";
-import type { Bookmark, Board as BoardData, BoardType, NewBoard, SearchEngine } from "@atlas-tab/core";
+import type { Bookmark, Board as BoardData, BoardType, NewBoard, SearchEngine, WallpaperHistoryEntry } from "@atlas-tab/core";
 import { useAppStore } from "./store/useAppStore";
 import { chromeStorageAdapter } from "./store/chromeStorageAdapter";
 import { applyThemeStyle } from "./applyThemeStyle";
@@ -181,6 +186,48 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
   const [widgetGalleryOpen, setWidgetGalleryOpen] = useState(false);
   const [searchOverlayOpen, setSearchOverlayOpen] = useState(false);
   const [now, setNow] = useState(() => new Date());
+
+  // Wallpaper upload: read file, auto-analyze, store in IndexedDB, update state
+  async function handleUploadWallpaper(file: File) {
+    const id = createId();
+    const isVideo = file.type.startsWith("video/");
+    const type = isVideo ? "video" as const : "image" as const;
+
+    // Read file bytes
+    const data: string | Blob = isVideo
+      ? file
+      : await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+    // Analyze to derive a theme
+    const style = isVideo
+      ? await analyzeVideoWallpaperStyle(URL.createObjectURL(file))
+      : await analyzeWallpaperStyle(data as string);
+
+    const entry: WallpaperHistoryEntry = {
+      id,
+      type,
+      thumbnailDataUrl: isVideo ? "" : (data as string),
+      name: file.name,
+      derivedThemeStyle: style,
+    };
+
+    // Store in IndexedDB + update chrome.storage.local
+    const newState = await uploadWallpaper(state, entry, data);
+    await chromeStorageAdapter.set("appState", newState);
+    await hydrate(); // re-hydrate the store
+    setWallpaper(id);
+  }
+
+  async function handleDeleteWallpaper(id: string) {
+    const newState = await deleteWallpaperFromHistory(state, id);
+    await chromeStorageAdapter.set("appState", newState);
+    await hydrate();
+  }
 
   // Global Ctrl/Cmd+K shortcut for the bookmark search overlay
   useEffect(() => {
@@ -438,6 +485,9 @@ function AppContent({ locale }: { locale: "en" | "tr" }) {
                 wallpaperCurrentId={state.wallpaper.currentId}
                 onWallpaperChange={setWallpaper}
                 onPreviewChange={setStylePreviewing}
+                wallpaperHistory={state.wallpaper.history}
+                onUploadWallpaper={handleUploadWallpaper}
+                onDeleteWallpaper={handleDeleteWallpaper}
               />
             </div>
           </div>

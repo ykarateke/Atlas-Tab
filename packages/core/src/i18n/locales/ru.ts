@@ -73,6 +73,12 @@ export const ru: Record<keyof typeof en, string> = {
   "style.columnsAuto": "Авто",
   "style.boardWidth": "Ширина доски",
   "style.wallpaperTitle": "Обои",
+  "style.uploadWallpaper": "Загрузить изображение или видео…",
+  "style.uploaded": "Загруженные",
+  "style.themeTitle": "Тема",
+  "style.themeMode": "Режим",
+  "style.light": "Светлый",
+  "style.dark": "Тёмный",
 
   "notes.placeholder": "Напишите что-нибудь…",
 

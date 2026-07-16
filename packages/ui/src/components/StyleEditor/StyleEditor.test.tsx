@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { ThemeStyle } from "@atlas-tab/core";
+import type { ThemeStyle, WallpaperHistoryEntry } from "@atlas-tab/core";
 import { StyleEditor } from "./StyleEditor";
 
 const themeStyle: ThemeStyle = {
@@ -23,6 +23,14 @@ const layoutProps = {
 const wallpaperProps = {
   wallpaperCurrentId: null,
   onWallpaperChange: vi.fn(),
+};
+
+const historyEntry: WallpaperHistoryEntry = {
+  id: "uploaded-1",
+  type: "image",
+  thumbnailDataUrl: "data:image/png;base64,fake",
+  name: "My photo",
+  derivedThemeStyle: themeStyle,
 };
 
 describe("StyleEditor", () => {
@@ -113,7 +121,7 @@ describe("StyleEditor", () => {
     );
     const sliders = screen.getAllByRole("slider");
     const widthSlider = sliders[sliders.length - 1]!;
-    expect(Number(widthSlider.getAttribute("max"))).toBeLessThan(220 * 2); // sane cap, not runaway
+    expect(Number(widthSlider.getAttribute("max"))).toBeLessThan(220 * 2);
   });
 
   it("renders a thumbnail for every bundled wallpaper and selects one on click", async () => {
@@ -132,13 +140,78 @@ describe("StyleEditor", () => {
     const thumbs = document.querySelectorAll('[class*="wallpaperThumb"]');
     expect(thumbs.length).toBeGreaterThanOrEqual(25);
 
-    await userEvent.click(thumbs[6]!); // 07.jpg
+    await userEvent.click(thumbs[6]!);
     expect(onWallpaperChange).toHaveBeenCalledWith("07.jpg");
+  });
+
+  it("shows uploaded wallpapers in a separate section when history is provided", () => {
+    render(
+      <StyleEditor
+        themeStyle={themeStyle}
+        onChange={vi.fn()}
+        onReset={vi.fn()}
+        onClose={vi.fn()}
+        {...layoutProps}
+        {...wallpaperProps}
+        wallpaperHistory={[historyEntry]}
+      />,
+    );
+    expect(screen.getByText("Uploaded")).toBeDefined();
+  });
+
+  it("calls onDeleteWallpaper when the delete button on a history item is clicked", async () => {
+    const onDeleteWallpaper = vi.fn();
+    render(
+      <StyleEditor
+        themeStyle={themeStyle}
+        onChange={vi.fn()}
+        onReset={vi.fn()}
+        onClose={vi.fn()}
+        {...layoutProps}
+        {...wallpaperProps}
+        wallpaperHistory={[historyEntry]}
+        onDeleteWallpaper={onDeleteWallpaper}
+      />,
+    );
+    const deleteBtns = document.querySelectorAll('[class*="deleteHistoryBtn"]');
+    expect(deleteBtns.length).toBe(1);
+    await userEvent.click(deleteBtns[0]!);
+    expect(onDeleteWallpaper).toHaveBeenCalledWith("uploaded-1");
+  });
+
+  it("toggles between light and dark mode", async () => {
+    const onChange = vi.fn();
+    render(
+      <StyleEditor
+        themeStyle={themeStyle}
+        onChange={onChange}
+        onReset={vi.fn()}
+        onClose={vi.fn()}
+        {...layoutProps}
+        {...wallpaperProps}
+      />,
+    );
+    // Currently dark (isDark: true), click Light
+    await userEvent.click(screen.getByText("Light"));
+    expect(onChange).toHaveBeenCalledWith({ isDark: false });
+  });
+
+  it("shows upload button and file input", () => {
+    render(
+      <StyleEditor
+        themeStyle={themeStyle}
+        onChange={vi.fn()}
+        onReset={vi.fn()}
+        onClose={vi.fn()}
+        {...layoutProps}
+        {...wallpaperProps}
+        onUploadWallpaper={vi.fn()}
+      />,
+    );
+    expect(screen.getByText("Upload image or video…")).toBeDefined();
   });
 });
 
-// jsdom's userEvent doesn't reliably drive <input type="range">; dispatch the
-// change event directly instead.
 function fireEventChange(element: HTMLElement, value: string) {
   const input = element as HTMLInputElement;
   const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!;
